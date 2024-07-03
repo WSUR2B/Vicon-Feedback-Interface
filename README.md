@@ -1,7 +1,3 @@
-Here's a polished README file based on your description:
-
----
-
 # Vicon Data Interface 📊📡
 
 Using Vicon’s DataStream SDK, we designed the **Vicon Data Interface** to capture real-time Vicon data and enhance the capabilities of the Vicon Capture system for biomechanics research. This interface collects data from Vicon markers, calculates joint angles, and monitors various devices like force plates and EMG systems directly from the Vicon System.
