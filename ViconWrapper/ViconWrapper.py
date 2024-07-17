@@ -68,6 +68,7 @@ class ViconWrapper:
         self.client = ViconDataStream.Client()
         self.client.Connect(host)
         self.client.SetBufferSize(1)
+        self.client.ConfigureWireless()
 
         self.markers = {}
         self.unlabeledMarkers = {}
@@ -90,7 +91,7 @@ class ViconWrapper:
 
         self.subjectLLegMM = 800
         self.subjectRLegMM = 800
-        self.subjectMarkerRMM = 5
+        self.subjectMarkerRMM = 7
 
         self.viconFPS = 100
         self.localFPS = 0
@@ -102,12 +103,13 @@ class ViconWrapper:
 
         This method enables or disables different types of data based on the current configuration settings.
         """
-        self.client.EnableLightweightSegmentData()
         self.client.DisableMarkerData()
         self.client.DisableUnlabeledMarkerData()
         self.client.DisableMarkerRayData()
         self.client.DisableDeviceData()
         self.client.DisableCentroidData()
+        self.client.EnableLightweightSegmentData()
+
 
         if self.labeledMarkerDataOn:
             self.client.EnableMarkerData()
@@ -277,6 +279,8 @@ class ViconWrapper:
         - Updates the existing subjects by updating their segments, markers, and kinematics.
 
         """
+
+        
         currentSubjectNames = set(self.client.GetSubjectNames())
         existingSubjectNames = {subject.name for subject in self.subjects}
 
@@ -463,18 +467,15 @@ class ViconWrapper:
         calculates the local FPS (frames per second) every 2 seconds, and prints it to the console.
 
         """
-        frame_count = 0
-        start_time = time.time()
-
+        counter = 0
         while self.running:
             self.updateFrame()
+            
+            # print(f"Vicon FPS: {self.localFPS}")
 
-            frame_count += 1
-            if time.time() - start_time >= 2.0:  # Every 2 seconds, print the FPS
-                self.localFPS = frame_count / (time.time() - start_time)
-                print("Local FPS:", self.localFPS)
-                frame_count = 0
-                start_time = time.time()
+            # if counter >= 100:
+            #     counter = 0
+            #     print(f"Vicon FPS: {self.localFPS}")
 
     def updateFrame(self):
         """
@@ -484,6 +485,9 @@ class ViconWrapper:
         It also updates the data streams if they are enabled, including device data, labeled marker data,
         unlabeled marker data, forceplate data, and subject data.
         """
+        start_time = time.time()
+
+        
         self.lastFrameNumber = self.frameNumber
         self.client.GetFrame()
         self.viconFPS = self.client.GetFrameRate()
@@ -500,6 +504,11 @@ class ViconWrapper:
             self.updateForeceplates()
         if self.subjectDataOn:
             self.updateSubjects()
+
+        dt = (time.time() - start_time)
+        if dt == 0:
+            dt =.01
+        self.localFPS =  1.0/dt
 
     def stopStream(self):
         """

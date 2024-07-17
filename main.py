@@ -1,5 +1,4 @@
 import sys
-#sdfsdf
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem, QTreeWidget, QHeaderView, QTableWidgetItem
 from GUI.MainWindow_ui import Ui_MainWindow
@@ -340,6 +339,14 @@ class MainTask:
     def runFrame(self):
         global vicon
 
+
+        vicon.updateFrame()
+        start_time = time.time()
+
+        # self.tickFPS()
+
+        # return
+    
         self.lastViconFrame = self.currentViconFrame    #used for clearning the plot 
         self.currentViconFrame = vicon.frameNumber      #used for clearning the plot
 
@@ -383,18 +390,22 @@ class MainTask:
         if self.streaming.UDPStream:
             self.streaming.updateStream(vicon)
 
-        self.tickFPS()
-        
+        dt = time.time() - start_time
+        if dt == 0:
+            dt = .001
+        self.frame_count+=1
+        if(self.frame_count >=100):
+            self.frame_count = 0
+            self.tickFPS(dt)
 
-    def tickFPS(self):
+    def tickFPS(self, dt):
         global vicon
-        self.frame_count += 1
-        if time.time() - self.start_time >= 1.0:  # Every second, print the FPS
-                updateMainLoopFPS(self.frame_count / (time.time() - self.start_time))
-                updateViconStreamFPS(vicon.localFPS)
 
-                self.frame_count = 0
-                self.start_time = time.time()
+        updateMainLoopFPS(int(1.0 / dt))
+        updateViconStreamFPS(int(vicon.localFPS))
+
+        # print(int(vicon.localFPS), ',', int(1.0 / dt))
+
 
     def zeroSubjectAngles(self):
         if self.activeSubject != None:
@@ -569,11 +580,11 @@ def addToLog(text):
 
 def updateMainLoopFPS(fps):
     global ui
-    ui.lblFPS.setText(f'FPS {fps:.2f}')
+    ui.lblFPS.setText(f'FPS {fps:10.2f}')
 
 def updateViconStreamFPS(fps):
     global ui
-    ui.lblViconFPS.setText(f'FPS {fps:.2f}') 
+    ui.lblViconFPS.setText(f'FPS {fps:10.2f}') 
 
 def adjestChartRange():
     global Main, ui
@@ -965,10 +976,24 @@ def ViconThreadingFunction():
 
 if __name__ == "__main__":
 
-    viconThread = threading.Thread(target=ViconThreadingFunction)
-    viconThread.start()
-
+    
+    host = "35.16.69.139:801"
+    vicon = ViconWrapper(host)
+    vicon.startStream()
  
+
+    # viconThread = threading.Thread(target=ViconThreadingFunction)
+    # viconThread.start()
+    
+    # while True:
+    #     try:
+    #         print(vicon.localFPS)
+    #     except:
+    #         continue
+        
+
+
+
     setupGUI()
 
 
