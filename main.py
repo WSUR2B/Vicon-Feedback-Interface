@@ -284,10 +284,10 @@ class Streaming:
         try:
             #data is a string, convert to bytes
             data = data.encode('utf-8')
-            packed_data = struct.pack(f"{len(data)}s", data)
+            # packed_data = struct.pack(f"{len(data)}s", data)
 
             # Send the packed data via UDP
-            self.sock.sendto(packed_data, (self.UDPHost, self.UDPPort))
+            self.sock.sendto(data, (self.UDPHost, self.UDPPort))
             self.UDPErrorCount = 0
 
         except:
@@ -969,7 +969,7 @@ def setupGUI():
 
 def ViconThreadingFunction():
     global vicon
-    host = "35.16.69.139:801"
+    host = "141.217.165.179:801"
     vicon = ViconWrapper(host)
     vicon.startStream()
     vicon.startStreamLoop()
@@ -977,7 +977,7 @@ def ViconThreadingFunction():
 if __name__ == "__main__":
 
     
-    host = "35.16.69.139:801"
+    host = "141.217.165.179:801"
     vicon = ViconWrapper(host)
     vicon.startStream()
  

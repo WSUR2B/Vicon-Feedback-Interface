@@ -616,7 +616,7 @@ class Ui_MainWindow(object):
 
         self.spinValueSize = QSpinBox(self.tab_5)
         self.spinValueSize.setObjectName(u"spinValueSize")
-        self.spinValueSize.setMinimum(10)
+        self.spinValueSize.setMinimum(2)
 
         self.horizontalLayout_17.addWidget(self.spinValueSize)
 
@@ -763,7 +763,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
