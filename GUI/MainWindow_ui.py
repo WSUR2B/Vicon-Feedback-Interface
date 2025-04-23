@@ -228,7 +228,7 @@ class Ui_MainWindow(object):
         self.spinMarkerR = QSpinBox(self.tab_3)
         self.spinMarkerR.setObjectName(u"spinMarkerR")
         self.spinMarkerR.setMinimum(1)
-        self.spinMarkerR.setValue(5)
+        self.spinMarkerR.setValue(7)
 
         self.horizontalLayout_5.addWidget(self.spinMarkerR)
 
@@ -268,7 +268,7 @@ class Ui_MainWindow(object):
         self.spinSize.setObjectName(u"spinSize")
         self.spinSize.setMinimum(1)
         self.spinSize.setMaximum(300)
-        self.spinSize.setValue(100)
+        self.spinSize.setValue(5)
 
         self.horizontalLayout_13.addWidget(self.spinSize)
 
@@ -473,6 +473,7 @@ class Ui_MainWindow(object):
 
         self.checkSavingAutoIndex = QCheckBox(self.tab_4)
         self.checkSavingAutoIndex.setObjectName(u"checkSavingAutoIndex")
+        self.checkSavingAutoIndex.setChecked(True)
 
         self.horizontalLayout_12.addWidget(self.checkSavingAutoIndex)
 
@@ -605,7 +606,7 @@ class Ui_MainWindow(object):
         self.spinPacketSize = QSpinBox(self.tab_5)
         self.spinPacketSize.setObjectName(u"spinPacketSize")
         self.spinPacketSize.setMinimum(10)
-        self.spinPacketSize.setValue(50)
+        self.spinPacketSize.setValue(10)
 
         self.horizontalLayout_17.addWidget(self.spinPacketSize)
 
@@ -617,6 +618,7 @@ class Ui_MainWindow(object):
         self.spinValueSize = QSpinBox(self.tab_5)
         self.spinValueSize.setObjectName(u"spinValueSize")
         self.spinValueSize.setMinimum(2)
+        self.spinValueSize.setValue(5)
 
         self.horizontalLayout_17.addWidget(self.spinValueSize)
 
@@ -658,6 +660,140 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.btnStartEndStream)
 
         self.tabWidget.addTab(self.tab_5, "")
+        self.tab_6 = QWidget()
+        self.tab_6.setObjectName(u"tab_6")
+        self.verticalLayout_10 = QVBoxLayout(self.tab_6)
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.frame_4 = QFrame(self.tab_6)
+        self.frame_4.setObjectName(u"frame_4")
+        sizePolicy1.setHeightForWidth(self.frame_4.sizePolicy().hasHeightForWidth())
+        self.frame_4.setSizePolicy(sizePolicy1)
+        self.frame_4.setFrameShape(QFrame.StyledPanel)
+        self.frame_4.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_36 = QHBoxLayout(self.frame_4)
+        self.horizontalLayout_36.setObjectName(u"horizontalLayout_36")
+        self.verticalLayout_22 = QVBoxLayout()
+        self.verticalLayout_22.setObjectName(u"verticalLayout_22")
+        self.label_61 = QLabel(self.frame_4)
+        self.label_61.setObjectName(u"label_61")
+        sizePolicy1.setHeightForWidth(self.label_61.sizePolicy().hasHeightForWidth())
+        self.label_61.setSizePolicy(sizePolicy1)
+        self.label_61.setLayoutDirection(Qt.LeftToRight)
+        self.label_61.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_22.addWidget(self.label_61)
+
+        self.horizontalLayout_39 = QHBoxLayout()
+        self.horizontalLayout_39.setObjectName(u"horizontalLayout_39")
+        self.label_62 = QLabel(self.frame_4)
+        self.label_62.setObjectName(u"label_62")
+        self.label_62.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.horizontalLayout_39.addWidget(self.label_62)
+
+        self.spinFeedbackMax = QDoubleSpinBox(self.frame_4)
+        self.spinFeedbackMax.setObjectName(u"spinFeedbackMax")
+        self.spinFeedbackMax.setMinimum(-999999.989999999990687)
+        self.spinFeedbackMax.setMaximum(999999.989999999990687)
+
+        self.horizontalLayout_39.addWidget(self.spinFeedbackMax)
+
+
+        self.verticalLayout_22.addLayout(self.horizontalLayout_39)
+
+        self.horizontalLayout_40 = QHBoxLayout()
+        self.horizontalLayout_40.setObjectName(u"horizontalLayout_40")
+        self.label_63 = QLabel(self.frame_4)
+        self.label_63.setObjectName(u"label_63")
+        self.label_63.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.horizontalLayout_40.addWidget(self.label_63)
+
+        self.spinFeedbackMin = QDoubleSpinBox(self.frame_4)
+        self.spinFeedbackMin.setObjectName(u"spinFeedbackMin")
+        self.spinFeedbackMin.setMinimum(-999999.989999999990687)
+        self.spinFeedbackMin.setMaximum(999999.989999999990687)
+
+        self.horizontalLayout_40.addWidget(self.spinFeedbackMin)
+
+
+        self.verticalLayout_22.addLayout(self.horizontalLayout_40)
+
+
+        self.horizontalLayout_36.addLayout(self.verticalLayout_22)
+
+        self.verticalLayout_20 = QVBoxLayout()
+        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
+        self.label_50 = QLabel(self.frame_4)
+        self.label_50.setObjectName(u"label_50")
+        sizePolicy1.setHeightForWidth(self.label_50.sizePolicy().hasHeightForWidth())
+        self.label_50.setSizePolicy(sizePolicy1)
+        self.label_50.setLayoutDirection(Qt.LeftToRight)
+        self.label_50.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_20.addWidget(self.label_50)
+
+        self.horizontalLayout_38 = QHBoxLayout()
+        self.horizontalLayout_38.setObjectName(u"horizontalLayout_38")
+        self.label_60 = QLabel(self.frame_4)
+        self.label_60.setObjectName(u"label_60")
+        self.label_60.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.horizontalLayout_38.addWidget(self.label_60)
+
+        self.spinFeedbackRegionMax = QDoubleSpinBox(self.frame_4)
+        self.spinFeedbackRegionMax.setObjectName(u"spinFeedbackRegionMax")
+        self.spinFeedbackRegionMax.setMinimum(-999999.989999999990687)
+        self.spinFeedbackRegionMax.setMaximum(999999.989999999990687)
+
+        self.horizontalLayout_38.addWidget(self.spinFeedbackRegionMax)
+
+
+        self.verticalLayout_20.addLayout(self.horizontalLayout_38)
+
+        self.horizontalLayout_37 = QHBoxLayout()
+        self.horizontalLayout_37.setObjectName(u"horizontalLayout_37")
+        self.label_59 = QLabel(self.frame_4)
+        self.label_59.setObjectName(u"label_59")
+        self.label_59.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.horizontalLayout_37.addWidget(self.label_59)
+
+        self.spinFeedbackRegionMin = QDoubleSpinBox(self.frame_4)
+        self.spinFeedbackRegionMin.setObjectName(u"spinFeedbackRegionMin")
+        self.spinFeedbackRegionMin.setMinimum(-999999.989999999990687)
+        self.spinFeedbackRegionMin.setMaximum(999999.989999999990687)
+
+        self.horizontalLayout_37.addWidget(self.spinFeedbackRegionMin)
+
+
+        self.verticalLayout_20.addLayout(self.horizontalLayout_37)
+
+
+        self.horizontalLayout_36.addLayout(self.verticalLayout_20)
+
+
+        self.verticalLayout_10.addWidget(self.frame_4)
+
+        self.label_49 = QLabel(self.tab_6)
+        self.label_49.setObjectName(u"label_49")
+        sizePolicy1.setHeightForWidth(self.label_49.sizePolicy().hasHeightForWidth())
+        self.label_49.setSizePolicy(sizePolicy1)
+        self.label_49.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_10.addWidget(self.label_49)
+
+        self.tableFeedback = QTableWidget(self.tab_6)
+        self.tableFeedback.setObjectName(u"tableFeedback")
+        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(self.tableFeedback.sizePolicy().hasHeightForWidth())
+        self.tableFeedback.setSizePolicy(sizePolicy6)
+
+        self.verticalLayout_10.addWidget(self.tableFeedback)
+
+        self.tabWidget.addTab(self.tab_6, "")
 
         self.gridLayout_2.addWidget(self.tabWidget, 1, 0, 2, 2)
 
@@ -679,11 +815,11 @@ class Ui_MainWindow(object):
 
         self.spinNFrames = QSpinBox(self.centralwidget)
         self.spinNFrames.setObjectName(u"spinNFrames")
-        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
-        sizePolicy6.setHorizontalStretch(0)
-        sizePolicy6.setVerticalStretch(0)
-        sizePolicy6.setHeightForWidth(self.spinNFrames.sizePolicy().hasHeightForWidth())
-        self.spinNFrames.setSizePolicy(sizePolicy6)
+        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+        sizePolicy7.setHorizontalStretch(0)
+        sizePolicy7.setVerticalStretch(0)
+        sizePolicy7.setHeightForWidth(self.spinNFrames.sizePolicy().hasHeightForWidth())
+        self.spinNFrames.setSizePolicy(sizePolicy7)
         self.spinNFrames.setMinimum(1)
         self.spinNFrames.setMaximum(10000)
         self.spinNFrames.setSingleStep(100)
@@ -698,26 +834,26 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.spinYmin = QDoubleSpinBox(self.centralwidget)
         self.spinYmin.setObjectName(u"spinYmin")
-        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        sizePolicy7.setHorizontalStretch(0)
-        sizePolicy7.setVerticalStretch(0)
-        sizePolicy7.setHeightForWidth(self.spinYmin.sizePolicy().hasHeightForWidth())
-        self.spinYmin.setSizePolicy(sizePolicy7)
+        sizePolicy8 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy8.setHorizontalStretch(0)
+        sizePolicy8.setVerticalStretch(0)
+        sizePolicy8.setHeightForWidth(self.spinYmin.sizePolicy().hasHeightForWidth())
+        self.spinYmin.setSizePolicy(sizePolicy8)
         self.spinYmin.setDecimals(5)
         self.spinYmin.setMinimum(-99999.000000000000000)
         self.spinYmin.setMaximum(99999.000000000000000)
         self.spinYmin.setSingleStep(100.000000000000000)
-        self.spinYmin.setValue(-1000.000000000000000)
+        self.spinYmin.setValue(-50.000000000000000)
 
         self.gridLayout_3.addWidget(self.spinYmin, 2, 0, 1, 2)
 
         self.sliderYrange2 = QSlider(self.centralwidget)
         self.sliderYrange2.setObjectName(u"sliderYrange2")
-        sizePolicy8 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Minimum)
-        sizePolicy8.setHorizontalStretch(0)
-        sizePolicy8.setVerticalStretch(0)
-        sizePolicy8.setHeightForWidth(self.sliderYrange2.sizePolicy().hasHeightForWidth())
-        self.sliderYrange2.setSizePolicy(sizePolicy8)
+        sizePolicy9 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Minimum)
+        sizePolicy9.setHorizontalStretch(0)
+        sizePolicy9.setVerticalStretch(0)
+        sizePolicy9.setHeightForWidth(self.sliderYrange2.sizePolicy().hasHeightForWidth())
+        self.sliderYrange2.setSizePolicy(sizePolicy9)
         self.sliderYrange2.setMaximum(10000)
         self.sliderYrange2.setOrientation(Qt.Vertical)
 
@@ -725,8 +861,8 @@ class Ui_MainWindow(object):
 
         self.sliderYrange1 = QSlider(self.centralwidget)
         self.sliderYrange1.setObjectName(u"sliderYrange1")
-        sizePolicy8.setHeightForWidth(self.sliderYrange1.sizePolicy().hasHeightForWidth())
-        self.sliderYrange1.setSizePolicy(sizePolicy8)
+        sizePolicy9.setHeightForWidth(self.sliderYrange1.sizePolicy().hasHeightForWidth())
+        self.sliderYrange1.setSizePolicy(sizePolicy9)
         self.sliderYrange1.setMaximum(10000)
         self.sliderYrange1.setSingleStep(0)
         self.sliderYrange1.setValue(10000)
@@ -737,15 +873,15 @@ class Ui_MainWindow(object):
 
         self.spinYmax = QDoubleSpinBox(self.centralwidget)
         self.spinYmax.setObjectName(u"spinYmax")
-        sizePolicy7.setHeightForWidth(self.spinYmax.sizePolicy().hasHeightForWidth())
-        self.spinYmax.setSizePolicy(sizePolicy7)
+        sizePolicy8.setHeightForWidth(self.spinYmax.sizePolicy().hasHeightForWidth())
+        self.spinYmax.setSizePolicy(sizePolicy8)
         self.spinYmax.setFrame(True)
         self.spinYmax.setAccelerated(False)
         self.spinYmax.setDecimals(5)
         self.spinYmax.setMinimum(-99999.000000000000000)
         self.spinYmax.setMaximum(99999.000000000000000)
         self.spinYmax.setSingleStep(100.000000000000000)
-        self.spinYmax.setValue(1000.000000000000000)
+        self.spinYmax.setValue(50.000000000000000)
 
         self.gridLayout_3.addWidget(self.spinYmax, 0, 0, 1, 2)
 
@@ -763,7 +899,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(4)
+        self.tabWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -823,6 +959,14 @@ class Ui_MainWindow(object):
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"Order of Packets", None))
         self.btnStartEndStream.setText(QCoreApplication.translate("MainWindow", u"Start Stream", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QCoreApplication.translate("MainWindow", u"Streaming", None))
+        self.label_61.setText(QCoreApplication.translate("MainWindow", u"Feedback Range", None))
+        self.label_62.setText(QCoreApplication.translate("MainWindow", u"Maximum", None))
+        self.label_63.setText(QCoreApplication.translate("MainWindow", u"Minimum", None))
+        self.label_50.setText(QCoreApplication.translate("MainWindow", u"Region Range", None))
+        self.label_60.setText(QCoreApplication.translate("MainWindow", u"Maximum", None))
+        self.label_59.setText(QCoreApplication.translate("MainWindow", u"Minimum", None))
+        self.label_49.setText(QCoreApplication.translate("MainWindow", u"Select Data For Feedback", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), QCoreApplication.translate("MainWindow", u"Feedback", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"N Frames", None))
         self.spinYmax.setPrefix("")
         self.spinYmax.setSuffix("")

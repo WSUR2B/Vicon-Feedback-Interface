@@ -212,7 +212,7 @@
             </sizepolicy>
            </property>
            <property name="currentIndex">
-            <number>4</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="tab_2">
             <property name="sizePolicy">
@@ -326,7 +326,7 @@
                     <number>1</number>
                    </property>
                    <property name="value">
-                    <number>5</number>
+                    <number>7</number>
                    </property>
                   </widget>
                  </item>
@@ -371,7 +371,7 @@
                     <number>300</number>
                    </property>
                    <property name="value">
-                    <number>100</number>
+                    <number>5</number>
                    </property>
                   </widget>
                  </item>
@@ -643,6 +643,9 @@
                  <property name="text">
                   <string>Auto Index</string>
                  </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -807,7 +810,7 @@
                   <number>10</number>
                  </property>
                  <property name="value">
-                  <number>50</number>
+                  <number>10</number>
                  </property>
                 </widget>
                </item>
@@ -822,6 +825,9 @@
                 <widget class="QSpinBox" name="spinValueSize">
                  <property name="minimum">
                   <number>2</number>
+                 </property>
+                 <property name="value">
+                  <number>5</number>
                  </property>
                 </widget>
                </item>
@@ -876,6 +882,199 @@
               <widget class="QPushButton" name="btnStartEndStream">
                <property name="text">
                 <string>Start Stream</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tab_6">
+            <attribute name="title">
+             <string>Feedback</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_10">
+             <item>
+              <widget class="QFrame" name="frame_4">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_36">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_22">
+                  <item>
+                   <widget class="QLabel" name="label_61">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="layoutDirection">
+                     <enum>Qt::LeftToRight</enum>
+                    </property>
+                    <property name="text">
+                     <string>Feedback Range</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_39">
+                    <item>
+                     <widget class="QLabel" name="label_62">
+                      <property name="text">
+                       <string>Maximum</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="spinFeedbackMax">
+                      <property name="minimum">
+                       <double>-999999.989999999990687</double>
+                      </property>
+                      <property name="maximum">
+                       <double>999999.989999999990687</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_40">
+                    <item>
+                     <widget class="QLabel" name="label_63">
+                      <property name="text">
+                       <string>Minimum</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="spinFeedbackMin">
+                      <property name="minimum">
+                       <double>-999999.989999999990687</double>
+                      </property>
+                      <property name="maximum">
+                       <double>999999.989999999990687</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_20">
+                  <item>
+                   <widget class="QLabel" name="label_50">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="layoutDirection">
+                     <enum>Qt::LeftToRight</enum>
+                    </property>
+                    <property name="text">
+                     <string>Region Range</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_38">
+                    <item>
+                     <widget class="QLabel" name="label_60">
+                      <property name="text">
+                       <string>Maximum</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="spinFeedbackRegionMax">
+                      <property name="minimum">
+                       <double>-999999.989999999990687</double>
+                      </property>
+                      <property name="maximum">
+                       <double>999999.989999999990687</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_37">
+                    <item>
+                     <widget class="QLabel" name="label_59">
+                      <property name="text">
+                       <string>Minimum</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="spinFeedbackRegionMin">
+                      <property name="minimum">
+                       <double>-999999.989999999990687</double>
+                      </property>
+                      <property name="maximum">
+                       <double>999999.989999999990687</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_49">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Select Data For Feedback</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QTableWidget" name="tableFeedback">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
                </property>
               </widget>
              </item>
@@ -961,7 +1160,7 @@
            <double>100.000000000000000</double>
           </property>
           <property name="value">
-           <double>-1000.000000000000000</double>
+           <double>-50.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -1039,7 +1238,7 @@
            <double>100.000000000000000</double>
           </property>
           <property name="value">
-           <double>1000.000000000000000</double>
+           <double>50.000000000000000</double>
           </property>
          </widget>
         </item>

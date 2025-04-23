@@ -1,7 +1,10 @@
 import sys
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem, QTreeWidget, QHeaderView, QTableWidgetItem
+from PySide6.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem, QTreeWidget, QHeaderView, QTableWidgetItem, QWidget
+
 from GUI.MainWindow_ui import Ui_MainWindow
+from GUI.FeedbackWindow_ui import Ui_Form
+from GUI.FeedbackGraph import FeedbackGraph
 from GUI.MyOpenGLCharting import MyCharting
 
 import time
@@ -90,9 +93,9 @@ class Exporting:
         #exporting variables and flags
         self.isRecording = False
         self.savingIndex = 0
-        self.savingAutoIndex = False
+        self.savingAutoIndex = True
         self.filename = "Recording"
-        self.saveAllDeviceData = True
+        self.saveAllDeviceData = False
         #default export path is the current directory of the main file
         self.savePath = os.path.dirname(os.path.realpath(__name__))
 
@@ -208,7 +211,7 @@ class Streaming:
         #UDP Streaming
         self.sock = []
         self.UDPErrorCount = 0
-        self.UDPStream = False
+        self.IsStreamingUDP = False
         self.UDPHost = targetIP
         self.UDPPort = port
 
@@ -218,7 +221,7 @@ class Streaming:
         self.angleStreamList = [] #ex [Side]+[angle] LHip
 
     def updateStream(self, vicon):
-        if not self.UDPStream:
+        if not self.IsStreamingUDP:
             return
         
         if vicon.subjectExists():
@@ -299,14 +302,50 @@ class Streaming:
 
     def startUDPStream(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.UDPStream = True
+        self.IsStreamingUDP = True
         addToLog("UDP Streaming Started")
 
     def stopUDPStream(self):
-        self.UDPStream = False
+        self.IsStreamingUDP = False
         self.sock.close()
         addToLog("UDP Streaming Stopped")
     
+class Feedback:
+    def __init__(self, feedbackGraph):
+        self.feedbackGraph = feedbackGraph
+        self.currentValue = 0
+
+        self.deviceFeedbackList = [] #ex [device][channel][component]
+        self.angleFeedbackList = [] #ex [Side]+[angle] LHip
+
+    def updateFeedback(self, vicon):
+            if self.deviceFeedbackList == [] and self.angleFeedbackList == []:
+                return
+            
+            if vicon.subjectExists():
+                activeSubject = vicon.getSubject(vicon.subjects[0].name)
+                self.updateAnglesFeedback(activeSubject)
+            
+            self.updateDeviceDataFeedback(vicon)
+
+
+    def updateAnglesFeedback(self, activeSubject):
+        for angle in self.angleFeedbackList:
+            angleValue = activeSubject.kinematics.anglesDictionary[angle]
+            self.setCurrentValue(angleValue)
+
+
+    def updateDeviceDataFeedback(self, vicon):
+        for deviceName, channel, component in self.deviceFeedbackList:
+            deviceData = vicon.devices[deviceName]["Data"][channel][component]['values'][0][-1]
+            self.setCurrentValue(deviceData)
+
+
+    def setCurrentValue(self, value):
+        self.currentValue = value
+        self.feedbackGraph.setCurrentValue(self.currentValue)
+        # print(self.currentValue)
+
 #Like OpenGL main loop, but witough OpenGLRenderering
 class MainTask:
     
@@ -333,6 +372,8 @@ class MainTask:
 
         self.streaming = Streaming()
 
+        self.feedback = Feedback(feedbackGraph)
+
         self.lastViconFrame = 0
         self.currentViconFrame = 0
 
@@ -343,9 +384,6 @@ class MainTask:
         vicon.updateFrame()
         start_time = time.time()
 
-        # self.tickFPS()
-
-        # return
     
         self.lastViconFrame = self.currentViconFrame    #used for clearning the plot 
         self.currentViconFrame = vicon.frameNumber      #used for clearning the plot
@@ -387,8 +425,12 @@ class MainTask:
         self.plotting.updatePlotting(vicon.frameNumber % self.maxFrames, vicon)
         if self.exporting.isRecording:
             self.exporting.updateExporting(vicon.frameNumber, vicon)
-        if self.streaming.UDPStream:
+        if self.streaming.IsStreamingUDP:
             self.streaming.updateStream(vicon)
+
+        if self.feedback.deviceFeedbackList != [] or self.feedback.angleFeedbackList != []:
+            self.feedback.updateFeedback(vicon)
+
 
         dt = time.time() - start_time
         if dt == 0:
@@ -397,6 +439,8 @@ class MainTask:
         if(self.frame_count >=100):
             self.frame_count = 0
             self.tickFPS(dt)
+
+        app.processEvents()
 
     def tickFPS(self, dt):
         global vicon
@@ -412,10 +456,14 @@ class MainTask:
             self.activeSubject.kinematics.recordZeroPosition()
 
 
-
+app = None          #Application
 Main = None         #Main Task
 ui = None           #UI elements
+ui2 = None          #UI elements
 vicon = None        #Vicon Wrapper
+
+myChart = None      #OpenGL Charting
+feedbackGraph = None #Feedback Graph
 
 ############################ DEVICE SELECTION FUNCTIONS ############################
 
@@ -741,6 +789,44 @@ def updateStreamTable():
         if i < len(rawDeviceStreamList):
             ui.tableStream.setItem(i, 1, QTableWidgetItem(f"{rawDeviceStreamList[i][0]}:{rawDeviceStreamList[i][1]}:{rawDeviceStreamList[i][2]}"))
 
+def updateFeedbackTable():
+    global ui, Main, vicon
+
+    rawDeviceStreamList = [] #ex [device][channel][component]
+    rawAngleStreamList = [] #ex [Side]+[angle] LHip
+
+
+    for device in vicon.devices:
+        for channel in vicon.devices[device]["Data"]:
+            if vicon.devices[device]["Data"][channel]["Online"]:
+                for component in vicon.devices[device]["Data"][channel]:
+                    if component != "Online":
+                        rawDeviceStreamList.append([device, channel, component])
+
+    if Main.activeSubject != None:
+        for angle in Main.activeSubject.kinematics.angleFlags:
+            if Main.activeSubject.kinematics.angleFlags[angle]:
+                rawAngleStreamList.append('L'+angle)
+                rawAngleStreamList.append('R'+angle)
+
+
+    ui.tableFeedback.clear()
+    ui.tableFeedback.setRowCount(max(len(rawAngleStreamList), len(rawDeviceStreamList)))
+    ui.tableFeedback.setColumnCount(2)
+    #stretch the columns
+    ui.tableFeedback.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+    ui.tableFeedback.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+
+    #name the columns
+    ui.tableFeedback.setHorizontalHeaderLabels(["Angles", "Devices"])
+    
+    #fill the table
+    for i in range(max(len(rawAngleStreamList), len(rawDeviceStreamList))):
+        if i < len(rawAngleStreamList):
+            ui.tableFeedback.setItem(i, 0, QTableWidgetItem(rawAngleStreamList[i]))
+        if i < len(rawDeviceStreamList):
+            ui.tableFeedback.setItem(i, 1, QTableWidgetItem(f"{rawDeviceStreamList[i][0]}:{rawDeviceStreamList[i][1]}:{rawDeviceStreamList[i][2]}"))
+
 def tabSelected(tabName):
     global ui
 
@@ -753,6 +839,8 @@ def tabSelected(tabName):
         updateAngleTree()
     elif tabName == "Device Selection":
         updateDeviceTree()    
+    elif tabName == "Feedback":
+        updateFeedbackTable()
 
 def updateSavingParameters():
     global Main, ui
@@ -840,27 +928,44 @@ def streamingTableSelectionChanged():
 
         ui.plainTextOrderOfPackets.appendPlainText(packet)
 
+def feedbackTableSelectionChanged():
+    global ui, Main
+    
+    selectedItems = ui.tableFeedback.selectedItems()
+    print(selectedItems)
 
+    #set values to stream
+    Main.feedback.deviceFeedbackList = [] #ex [device][channel][component]
+    Main.feedback.angleFeedbackList = [] #ex [Side]+[angle] LHip
+    for item in selectedItems:
+        if item.column() == 0:
+            Main.feedback.angleFeedbackList.append(item.text())
+        elif item.column() == 1:
+            device, channel, component = item.text().split(":")
+            Main.feedback.deviceFeedbackList.append([device, channel, component])
 
+    print(Main.feedback.angleFeedbackList)
+    print(Main.feedback.deviceFeedbackList)
 
+def feedbackRangesChanged():
+    global ui, Main, feedbackGraph
 
-
+    feedbackGraph.setTotalRange(ui.spinFeedbackMin.value(), ui.spinFeedbackMax.value())
+    feedbackGraph.setRegionRange(ui.spinFeedbackRegionMin.value(), ui.spinFeedbackRegionMax.value())
 
 def closingEvent():
     global vicon, Main
     print("Closing Event")
     vicon.stopStream()
     Main.streaming.stopUDPStream()
-
     
 def test():
     global vicon, ui
     text = f"Devices: {vicon.devices}\n"
     ui.plainTextEdit.appendPlainText(text)
 
-
 def setupGUI():
-    global myChart, Main, vicon, ui
+    global myChart, Main, vicon, ui, feedbackGraph, app
 
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
@@ -868,19 +973,39 @@ def setupGUI():
     app.setApplicationDisplayName("Vicon Data Viewer")
     app.setApplicationVersion("1.0")
 
+    
+
 
     MainWindow = QMainWindow()
-    #make full screen
-    # MainWindow.showMaximized()
+    MainWindow.setWindowTitle("Vicon Data Viewer")
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
+
+    SideWindow = QWidget()
+    ui2 = Ui_Form()
+    ui2.setupUi(SideWindow)
+    SideWindow.show()
+
+
+    feedbackMax = 100
+    feedbackRegionMax = 50
+    feedbackValue = 0
+    feedbackRegionMin = -50
+    feedbackMin = -100
+
+    feedbackGraph = FeedbackGraph(feedbackMax, feedbackRegionMax, feedbackValue, feedbackRegionMin, feedbackMin)
+    ui2.panFeedbackPlot.addWidget(feedbackGraph.plotWidget)
+    ui.spinFeedbackMax.setValue(feedbackMax)
+    ui.spinFeedbackRegionMax.setValue(feedbackRegionMax)
+    ui.spinFeedbackRegionMin.setValue(feedbackRegionMin)
+    ui.spinFeedbackMin.setValue(feedbackMin)
+
     
     myChart = MyCharting()
     ui.horizontalLayout.addWidget(myChart.chartView)
 
     Main = MainTask()
-    # ui.OpenGLLayout.addWidget(Main)
 
     ui.deviceTree.setColumnCount(2)
     ui.deviceTree.setHeaderLabels(["Device", "Online"])
@@ -952,6 +1077,13 @@ def setupGUI():
     ui.spinRightLeg.valueChanged.connect(lambda: updateLegsandMarkreDimentions())
     ui.spinMarkerR.valueChanged.connect(lambda: updateLegsandMarkreDimentions())
 
+    ui.spinFeedbackMax.valueChanged.connect(lambda: feedbackRangesChanged())
+    ui.spinFeedbackRegionMax.valueChanged.connect(lambda: feedbackRangesChanged())
+    ui.spinFeedbackRegionMin.valueChanged.connect(lambda: feedbackRangesChanged())
+    ui.spinFeedbackMin.valueChanged.connect(lambda: feedbackRangesChanged())
+
+    ui.tableFeedback.itemSelectionChanged.connect(lambda: feedbackTableSelectionChanged())
+
     ui.btnTest.clicked.connect(lambda: test())
 
     #add closing event
@@ -967,12 +1099,6 @@ def setupGUI():
 
 
 
-def ViconThreadingFunction():
-    global vicon
-    host = "141.217.165.179:801"
-    vicon = ViconWrapper(host)
-    vicon.startStream()
-    vicon.startStreamLoop()
 
 if __name__ == "__main__":
 
@@ -981,25 +1107,23 @@ if __name__ == "__main__":
     vicon = ViconWrapper(host)
     vicon.startStream()
  
-
-    # viconThread = threading.Thread(target=ViconThreadingFunction)
-    # viconThread.start()
-    
-    # while True:
-    #     try:
-    #         print(vicon.localFPS)
-    #     except:
-    #         continue
-        
-
-
-
     setupGUI()
 
 
 
 
+# def ViconThreadingFunction():
+#     global vicon
+#     host = "141.217.165.179:801"
+#     vicon = ViconWrapper(host)
+#     vicon.startStream()
+#     vicon.startStreamLoop()
    
+# viconThread = threading.Thread(target=ViconThreadingFunction)
+# viconThread.start()
 
- 
-
+# while True:
+#     try:
+#         print(vicon.localFPS)
+#     except:
+#         continue

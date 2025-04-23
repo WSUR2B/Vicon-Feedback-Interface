@@ -68,7 +68,7 @@ class ViconWrapper:
         self.client = ViconDataStream.Client()
         self.client.Connect(host)
         self.client.SetBufferSize(1)
-        self.client.ConfigureWireless()
+        # self.client.ConfigureWireless()
 
         self.markers = {}
         self.unlabeledMarkers = {}
