@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1173, 680)
+        MainWindow.resize(1173, 681)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_4 = QGridLayout(self.centralwidget)
@@ -62,42 +62,9 @@ class Ui_MainWindow(object):
         self.gridLayout_5.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_20 = QHBoxLayout()
         self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
-        self.horizontalLayout_19 = QHBoxLayout()
-        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
-        self.label_5 = QLabel(self.frame_2)
-        self.label_5.setObjectName(u"label_5")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
-        self.label_5.setSizePolicy(sizePolicy2)
-
-        self.horizontalLayout_19.addWidget(self.label_5)
-
-        self.lblAngleFilterIndec = QLabel(self.frame_2)
-        self.lblAngleFilterIndec.setObjectName(u"lblAngleFilterIndec")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.lblAngleFilterIndec.sizePolicy().hasHeightForWidth())
-        self.lblAngleFilterIndec.setSizePolicy(sizePolicy3)
-        font = QFont()
-        font.setPointSize(8)
-        self.lblAngleFilterIndec.setFont(font)
-
-        self.horizontalLayout_19.addWidget(self.lblAngleFilterIndec)
-
-
-        self.horizontalLayout_20.addLayout(self.horizontalLayout_19)
-
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_20.addItem(self.horizontalSpacer_2)
-
-        self.btnTest = QPushButton(self.frame_2)
-        self.btnTest.setObjectName(u"btnTest")
-
-        self.horizontalLayout_20.addWidget(self.btnTest)
 
         self.label_23 = QLabel(self.frame_2)
         self.label_23.setObjectName(u"label_23")
@@ -125,7 +92,60 @@ class Ui_MainWindow(object):
         self.horizontalLayout_20.addWidget(self.lblFPS)
 
 
-        self.gridLayout_5.addLayout(self.horizontalLayout_20, 0, 0, 1, 1)
+        self.gridLayout_5.addLayout(self.horizontalLayout_20, 0, 1, 1, 1)
+
+        self.verticalLayout_14 = QVBoxLayout()
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.horizontalLayout_19 = QHBoxLayout()
+        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
+        self.label_5 = QLabel(self.frame_2)
+        self.label_5.setObjectName(u"label_5")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
+        self.label_5.setSizePolicy(sizePolicy2)
+
+        self.horizontalLayout_19.addWidget(self.label_5)
+
+        self.lblAngleFilterIndec = QLabel(self.frame_2)
+        self.lblAngleFilterIndec.setObjectName(u"lblAngleFilterIndec")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.lblAngleFilterIndec.sizePolicy().hasHeightForWidth())
+        self.lblAngleFilterIndec.setSizePolicy(sizePolicy3)
+        font = QFont()
+        font.setPointSize(8)
+        self.lblAngleFilterIndec.setFont(font)
+
+        self.horizontalLayout_19.addWidget(self.lblAngleFilterIndec)
+
+
+        self.verticalLayout_14.addLayout(self.horizontalLayout_19)
+
+        self.horizontalLayout_33 = QHBoxLayout()
+        self.horizontalLayout_33.setObjectName(u"horizontalLayout_33")
+        self.label_51 = QLabel(self.frame_2)
+        self.label_51.setObjectName(u"label_51")
+        sizePolicy2.setHeightForWidth(self.label_51.sizePolicy().hasHeightForWidth())
+        self.label_51.setSizePolicy(sizePolicy2)
+
+        self.horizontalLayout_33.addWidget(self.label_51)
+
+        self.lblDeviceFilterIndec = QLabel(self.frame_2)
+        self.lblDeviceFilterIndec.setObjectName(u"lblDeviceFilterIndec")
+        sizePolicy3.setHeightForWidth(self.lblDeviceFilterIndec.sizePolicy().hasHeightForWidth())
+        self.lblDeviceFilterIndec.setSizePolicy(sizePolicy3)
+        self.lblDeviceFilterIndec.setFont(font)
+
+        self.horizontalLayout_33.addWidget(self.lblDeviceFilterIndec)
+
+
+        self.verticalLayout_14.addLayout(self.horizontalLayout_33)
+
+
+        self.gridLayout_5.addLayout(self.verticalLayout_14, 0, 0, 1, 1)
 
 
         self.verticalLayout_5.addWidget(self.frame_2)
@@ -166,6 +186,90 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.deviceTree)
 
+        self.label_52 = QLabel(self.tab_2)
+        self.label_52.setObjectName(u"label_52")
+
+        self.verticalLayout_2.addWidget(self.label_52)
+
+        self.verticalLayout_12 = QVBoxLayout()
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.horizontalLayout_25 = QHBoxLayout()
+        self.horizontalLayout_25.setObjectName(u"horizontalLayout_25")
+        self.label_38 = QLabel(self.tab_2)
+        self.label_38.setObjectName(u"label_38")
+
+        self.horizontalLayout_25.addWidget(self.label_38)
+
+        self.comboDeviceFilterType = QComboBox(self.tab_2)
+        self.comboDeviceFilterType.setObjectName(u"comboDeviceFilterType")
+
+        self.horizontalLayout_25.addWidget(self.comboDeviceFilterType)
+
+
+        self.verticalLayout_12.addLayout(self.horizontalLayout_25)
+
+        self.horizontalLayout_26 = QHBoxLayout()
+        self.horizontalLayout_26.setObjectName(u"horizontalLayout_26")
+        self.label_39 = QLabel(self.tab_2)
+        self.label_39.setObjectName(u"label_39")
+
+        self.horizontalLayout_26.addWidget(self.label_39)
+
+        self.spinDeviceFilterSize = QSpinBox(self.tab_2)
+        self.spinDeviceFilterSize.setObjectName(u"spinDeviceFilterSize")
+        self.spinDeviceFilterSize.setMinimum(1)
+        self.spinDeviceFilterSize.setMaximum(300)
+        self.spinDeviceFilterSize.setValue(5)
+
+        self.horizontalLayout_26.addWidget(self.spinDeviceFilterSize)
+
+        self.label_40 = QLabel(self.tab_2)
+        self.label_40.setObjectName(u"label_40")
+
+        self.horizontalLayout_26.addWidget(self.label_40)
+
+        self.spinDeviceFilterSampleRate = QSpinBox(self.tab_2)
+        self.spinDeviceFilterSampleRate.setObjectName(u"spinDeviceFilterSampleRate")
+        self.spinDeviceFilterSampleRate.setMaximum(9999)
+        self.spinDeviceFilterSampleRate.setValue(100)
+
+        self.horizontalLayout_26.addWidget(self.spinDeviceFilterSampleRate)
+
+
+        self.verticalLayout_12.addLayout(self.horizontalLayout_26)
+
+        self.horizontalLayout_27 = QHBoxLayout()
+        self.horizontalLayout_27.setObjectName(u"horizontalLayout_27")
+        self.label_41 = QLabel(self.tab_2)
+        self.label_41.setObjectName(u"label_41")
+
+        self.horizontalLayout_27.addWidget(self.label_41)
+
+        self.spinDeviceFilterLowcut = QDoubleSpinBox(self.tab_2)
+        self.spinDeviceFilterLowcut.setObjectName(u"spinDeviceFilterLowcut")
+        self.spinDeviceFilterLowcut.setMaximum(9999.000000000000000)
+        self.spinDeviceFilterLowcut.setValue(0.010000000000000)
+
+        self.horizontalLayout_27.addWidget(self.spinDeviceFilterLowcut)
+
+        self.label_42 = QLabel(self.tab_2)
+        self.label_42.setObjectName(u"label_42")
+
+        self.horizontalLayout_27.addWidget(self.label_42)
+
+        self.spinDeviceFilterHighcut = QDoubleSpinBox(self.tab_2)
+        self.spinDeviceFilterHighcut.setObjectName(u"spinDeviceFilterHighcut")
+        self.spinDeviceFilterHighcut.setMaximum(9999.000000000000000)
+        self.spinDeviceFilterHighcut.setValue(29.000000000000000)
+
+        self.horizontalLayout_27.addWidget(self.spinDeviceFilterHighcut)
+
+
+        self.verticalLayout_12.addLayout(self.horizontalLayout_27)
+
+
+        self.verticalLayout_2.addLayout(self.verticalLayout_12)
+
         self.tabWidget.addTab(self.tab_2, "")
         self.tab_3 = QWidget()
         self.tab_3.setObjectName(u"tab_3")
@@ -179,16 +283,6 @@ class Ui_MainWindow(object):
         self.angleTree.setExpandsOnDoubleClick(False)
 
         self.verticalLayout_7.addWidget(self.angleTree)
-
-        self.btnZerAngles_1 = QPushButton(self.tab_3)
-        self.btnZerAngles_1.setObjectName(u"btnZerAngles_1")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.btnZerAngles_1.sizePolicy().hasHeightForWidth())
-        self.btnZerAngles_1.setSizePolicy(sizePolicy4)
-
-        self.verticalLayout_7.addWidget(self.btnZerAngles_1)
 
         self.verticalLayout_8 = QVBoxLayout()
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
@@ -318,6 +412,16 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayout_7.addLayout(self.verticalLayout_8)
+
+        self.btnZerAngles_1 = QPushButton(self.tab_3)
+        self.btnZerAngles_1.setObjectName(u"btnZerAngles_1")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.btnZerAngles_1.sizePolicy().hasHeightForWidth())
+        self.btnZerAngles_1.setSizePolicy(sizePolicy4)
+
+        self.verticalLayout_7.addWidget(self.btnZerAngles_1)
 
         self.tabWidget.addTab(self.tab_3, "")
         self.tab = QWidget()
@@ -899,7 +1003,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -908,15 +1012,21 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.plainTextEdit.setPlainText(QCoreApplication.translate("MainWindow", u"Hello Data Outputas", None))
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Angle Filter: ", None))
-        self.lblAngleFilterIndec.setText(QCoreApplication.translate("MainWindow", u"none", None))
-        self.btnTest.setText(QCoreApplication.translate("MainWindow", u"test", None))
-        self.label_23.setText(QCoreApplication.translate("MainWindow", u"Vicon Processing ", None))
+        self.label_23.setText(QCoreApplication.translate("MainWindow", u"Vicon  ", None))
         self.lblViconFPS.setText(QCoreApplication.translate("MainWindow", u"lblFPS", None))
         self.label_22.setText(QCoreApplication.translate("MainWindow", u"  Main ", None))
         self.lblFPS.setText(QCoreApplication.translate("MainWindow", u"lblFPS", None))
+        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Angle Filter: ", None))
+        self.lblAngleFilterIndec.setText(QCoreApplication.translate("MainWindow", u"none", None))
+        self.label_51.setText(QCoreApplication.translate("MainWindow", u"Device Filter: ", None))
+        self.lblDeviceFilterIndec.setText(QCoreApplication.translate("MainWindow", u"none", None))
+        self.label_52.setText(QCoreApplication.translate("MainWindow", u"The Device Filter is only applied to the device data that is being plotted.", None))
+        self.label_38.setText(QCoreApplication.translate("MainWindow", u"Device Filter: ", None))
+        self.label_39.setText(QCoreApplication.translate("MainWindow", u"Size:", None))
+        self.label_40.setText(QCoreApplication.translate("MainWindow", u"Sample Rate:", None))
+        self.label_41.setText(QCoreApplication.translate("MainWindow", u"Lowcut:", None))
+        self.label_42.setText(QCoreApplication.translate("MainWindow", u"Highcut: ", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Device Selection", None))
-        self.btnZerAngles_1.setText(QCoreApplication.translate("MainWindow", u"Zero Angles", None))
         self.label_24.setText(QCoreApplication.translate("MainWindow", u"Left Leg (mm):", None))
         self.label_28.setText(QCoreApplication.translate("MainWindow", u"Right Leg (mm):", None))
         self.label_27.setText(QCoreApplication.translate("MainWindow", u"Marker R (mm):", None))
@@ -925,6 +1035,7 @@ class Ui_MainWindow(object):
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"Sample Rate:", None))
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"Lowcut:", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"Highcut: ", None))
+        self.btnZerAngles_1.setText(QCoreApplication.translate("MainWindow", u"Zero Angles", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("MainWindow", u"Angle Selection", None))
         self.btnZerAngles.setText(QCoreApplication.translate("MainWindow", u"Zero Angles", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Angle 1:", None))

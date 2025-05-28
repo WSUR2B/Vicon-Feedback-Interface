@@ -1,5 +1,5 @@
 import Kinematics.Calculation as calc
-from Kinematics.Filters import MyFilter
+from Filters import MyFilter
 import numpy as np
 
 

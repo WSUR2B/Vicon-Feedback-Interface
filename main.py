@@ -14,7 +14,7 @@ from ViconWrapper.ViconWrapper import ViconWrapper
 # from WindowFilters import WindowFilter
 
 import Kinematics.Calculation as calc
-import Kinematics.Filters as filters
+import Filters as filters
 
 import numpy as np
 
@@ -43,9 +43,13 @@ class Plotting:
         self.Angle1 = "" #name of the angle to draw
         self.Angle2 = "" #name of the angle to draw
         self.deviceData = [] #ex [device][channel][component]
+        self.deviceFilter = filters.MyFilter(1, 1, "none")
 
     def clearAll(self):
         self.myChart.clearAllSeries()
+
+    def updateDeviceFilterType(self, windowSize, sampleRate, filterType, lowCut, highCut):
+        self.deviceFilter = filters.MyFilter(windowSize, sampleRate, filterType, lowCut, highCut)
 
     def updatePlotting(self, frameNumber, vicon):
         # print("Updating Plotting")
@@ -79,6 +83,7 @@ class Plotting:
         
         data = vicon.devices[self.deviceData[0]]["Data"][self.deviceData[1]][self.deviceData[2]]['values'][0]
         for i in range(len(data)):
+            data[i] = self.deviceFilter.filter(data[i])
             self.myChart.addData(3, frameNumber - 1 + i/len(data) ,data[i])
 
 class Exporting:
@@ -190,8 +195,10 @@ class Exporting:
         for deviceName, channel in self.deviceExportList:
             listOfComponents = list(vicon.devices[deviceName]["Data"][channel].keys())
             listOfComponents.remove("Online")
+
             if f"{deviceName}:{channel}" not in self.deviceExportFrames:
                 self.deviceExportFrames[f"{deviceName}:{channel}"] = pd.DataFrame()
+
             if self.saveAllDeviceData:
                 for i in range(len(vicon.devices[deviceName]["Data"][channel][listOfComponents[0]]['values'][0])):
                     new_dict_row = {'Frame': [frameNumber-1+i/len(vicon.devices[deviceName]["Data"][channel][listOfComponents[0]]['values'][0])]}
@@ -218,7 +225,30 @@ class Streaming:
         self.packetSize = 50
         self.valueSize = 10
         self.deviceStreamList = [] #ex [device][channel][component]
+
+        self.filterType = "none"
+        self.windowSize = 101
+        self.sampleRate = 100
+        self.lowCut = .01
+        self.highCut = 29
+
+
+        self.deviceFilterList = {}
         self.angleStreamList = [] #ex [Side]+[angle] LHip
+
+    def updateDeviceFilterType(self, windowSize, sampleRate, filterType, lowCut, highCut):
+        self.filterType = filterType
+        self.windowSize = windowSize
+        self.sampleRate = sampleRate
+        self.lowCut = lowCut
+        self.highCut = highCut
+
+
+        self.deviceFilterList = {}  # Reset the filter list
+
+        for deviceName, channel, component in self.deviceStreamList:
+            deviceLabel = deviceName + ":" + channel + ":" + component
+            self.deviceFilterList[deviceLabel] = filters.MyFilter(windowSize, sampleRate, filterType, lowCut, highCut)
 
     def updateStream(self, vicon):
         if not self.IsStreamingUDP:
@@ -229,6 +259,9 @@ class Streaming:
             self.sendAngleOverUDP(activeSubject)
         
         self.sendDeviceDataOverUDP(vicon)
+
+        # for filter in self.deviceFilterList:
+        #     print(f"Applying filter {self.deviceFilterList[filter].filter_type} to {filter}")
 
 
     def sendAngleOverUDP(self, activeSubject):
@@ -267,6 +300,7 @@ class Streaming:
 
 
             deviceData = vicon.devices[deviceName]["Data"][channel][component]['values'][0][-1]
+            # deviceData = self.deviceFilterList[deviceLabel].filter(deviceData)
             deviceData = str(deviceData)
             deviceData = deviceData[:self.valueSize]
             if len(deviceData) < self.valueSize: #add 0s to the end of the string
@@ -464,6 +498,14 @@ vicon = None        #Vicon Wrapper
 
 myChart = None      #OpenGL Charting
 feedbackGraph = None #Feedback Graph
+
+#device filter parameters
+deviceFilterType = "none"
+deviceFilterWindow = 101
+deviceFilterLowCut = .01
+deviceFilterHighCut = 29
+deviceFilterSampleRate = 100
+deviceSetFilterFlag = False
 
 ############################ DEVICE SELECTION FUNCTIONS ############################
 
@@ -717,6 +759,31 @@ def setFilterType(filterType):
     
     Main.setFilterFlag = True
 
+def setDeviceFilterType(filterType):
+    global deviceFilterType, deviceFilterWindow, deviceFilterLowCut, deviceFilterHighCut, deviceFilterSampleRate, deviceSetFilterFlag, ui
+    global Main
+    deviceFilterType = filterType
+    deviceFilterWindow = ui.spinDeviceFilterSize.value()
+    deviceFilterLowCut = ui.spinDeviceFilterLowcut.value()
+    deviceFilterHighCut = ui.spinDeviceFilterHighcut.value()
+    deviceFilterSampleRate = ui.spinDeviceFilterSampleRate.value()
+
+
+    filterMessage = f"{deviceFilterType}"
+    if filterType == "bandpass":
+        filterMessage = f"{deviceFilterType} - [{deviceFilterLowCut},{deviceFilterHighCut}] Hz, Size {deviceFilterWindow}, Sample Rate {deviceFilterSampleRate}"
+    elif filterType == "moving_average":
+        filterMessage = f"{deviceFilterType} - Size {deviceFilterWindow}, Sample Rate {deviceFilterSampleRate}"
+    elif filterType == "moving_median":
+        filterMessage = f"{deviceFilterType} - Size {deviceFilterWindow}, Sample Rate {deviceFilterSampleRate}"
+
+    ui.lblDeviceFilterIndec.setText(filterMessage)
+
+    Main.plotting.updateDeviceFilterType(deviceFilterWindow, deviceFilterSampleRate, deviceFilterType, deviceFilterLowCut, deviceFilterHighCut)
+    # Main.streaming.updateDeviceFilterType(deviceFilterWindow, deviceFilterSampleRate, deviceFilterType, deviceFilterLowCut, deviceFilterHighCut)
+
+    deviceSetFilterFlag = True
+
 def updateExportTable():
     global ui, Main, vicon
 
@@ -876,6 +943,7 @@ def streamingTableSelectionChanged():
 
     #set values to stream
     Main.streaming.deviceStreamList = [] #ex [device][channel][component]
+    Main.streaming.deviceFilterList = {} #ex "itemName"
     Main.streaming.angleStreamList = [] #ex [Side]+[angle] LHip
     for item in selectedItems:
         if item.column() == 0:
@@ -883,6 +951,7 @@ def streamingTableSelectionChanged():
         elif item.column() == 1:
             device, channel, component = item.text().split(":")
             Main.streaming.deviceStreamList.append([device, channel, component])
+            Main.streaming.deviceFilterList[f"{device}:{channel}:{component}"] = filters.MyFilter(Main.streaming.windowSize, Main.streaming.sampleRate, Main.streaming.filterType, Main.streaming.lowCut, Main.streaming.highCut)
 
     print(Main.streaming.angleStreamList)
     print(Main.streaming.deviceStreamList)
@@ -959,10 +1028,6 @@ def closingEvent():
     vicon.stopStream()
     Main.streaming.stopUDPStream()
     
-def test():
-    global vicon, ui
-    text = f"Devices: {vicon.devices}\n"
-    ui.plainTextEdit.appendPlainText(text)
 
 def setupGUI():
     global myChart, Main, vicon, ui, feedbackGraph, app
@@ -1055,6 +1120,19 @@ def setupGUI():
     ui.spinHighcut.valueChanged.connect(lambda: setFilterType(ui.comboFilter.currentText()))
     ui.spinSampleRate.valueChanged.connect(lambda: setFilterType(ui.comboFilter.currentText()))
 
+
+    for filter in filters.FilterTypes:
+        ui.comboDeviceFilterType.addItem(filter)
+    ui.comboDeviceFilterType.currentIndexChanged.connect(lambda: setDeviceFilterType(ui.comboDeviceFilterType.currentText()))
+    ui.spinDeviceFilterSize.valueChanged.connect(lambda: setDeviceFilterType(ui.comboDeviceFilterType.currentText()))
+    ui.spinDeviceFilterLowcut.valueChanged.connect(lambda: setDeviceFilterType(ui.comboDeviceFilterType.currentText()))
+    ui.spinDeviceFilterHighcut.valueChanged.connect(lambda: setDeviceFilterType(ui.comboDeviceFilterType.currentText()))
+    ui.spinDeviceFilterSampleRate.valueChanged.connect(lambda: setDeviceFilterType(ui.comboDeviceFilterType.currentText()))
+
+
+
+
+
     ui.tabWidget.currentChanged.connect(lambda: tabSelected(ui.tabWidget.tabText(ui.tabWidget.currentIndex())))
 
     ui.txtFilename.setText(Main.exporting.filename)
@@ -1084,7 +1162,6 @@ def setupGUI():
 
     ui.tableFeedback.itemSelectionChanged.connect(lambda: feedbackTableSelectionChanged())
 
-    ui.btnTest.clicked.connect(lambda: test())
 
     #add closing event
     app.aboutToQuit.connect(lambda: closingEvent())
