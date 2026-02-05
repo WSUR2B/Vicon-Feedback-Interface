@@ -447,26 +447,6 @@ Frame,X,Y,Z
 
 ---
 
-## Citation
-
-If you use this software in your research, please cite:
-
-```bibtex
-@software{grubich2024vicon,
-  author = {Grubich, Daniil},
-  title = {Vicon Data Interface: Real-Time Motion Capture Data Processing System},
-  year = {2024},
-  institution = {Wayne State University, R2B Lab},
-  url = {https://github.com/your-repository}
-}
-```
-
-**For publications:**
-
-Grubich, D. (2024). *Vicon Data Interface: Real-Time Motion Capture Data Processing System*. Wayne State University, Robotics and Biomechanics Lab.
-
----
-
 ## Authors
 
 **Daniil Grubich**
@@ -475,8 +455,8 @@ Grubich, D. (2024). *Vicon Data Interface: Real-Time Motion Capture Data Process
 - Email: daniil.grubich@wayne.edu
 
 **Principal Investigator:**
-- Dr. [PI Name]
-- Wayne State University, Department of [Department]
+- Dr. E. Peter Washabaugh
+- Wayne State University, Department of Biomedical Engineering
 
 ---
 
@@ -513,9 +493,6 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 - **R2B Lab** members for testing and feedback
 - **Open-source community** for the excellent Python libraries used in this project
 
-### Funding
-
-This work was supported by [Funding Source/Grant Number].
 
 ---
 
