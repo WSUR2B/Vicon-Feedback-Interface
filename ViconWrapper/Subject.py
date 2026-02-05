@@ -1,5 +1,31 @@
+"""
+Subject Module - Representation of Tracked Subjects
+
+This module defines the Subject class, which represents a person or object
+being tracked by the Vicon motion capture system.
+
+A Subject contains:
+    - Markers: 3D positions of reflective markers
+    - Segments: Body segments with position/orientation (optional)
+    - Kinematics: Calculated joint angles and positions
+
+The Subject class automatically updates marker positions and calculates
+kinematics on each frame update.
+
+Author: Daniil Grubich
+Institution: Wayne State University - R2B Lab
+"""
+
+# ============================================================================
+# IMPORTS
+# ============================================================================
+
 from ViconWrapper.Segment import Segment
 from Kinematics.MarkerKinematics import MarkerKinematicsPlugInSetQ0
+
+# ============================================================================
+# SUBJECT CLASS
+# ============================================================================
 
 class Subject:
     def __init__(self, name, LLegMM, RLegMM, MarkerRMM):

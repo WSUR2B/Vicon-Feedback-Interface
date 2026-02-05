@@ -1,3 +1,26 @@
+"""
+Segment Module - Body Segment Representation
+
+This module defines the Segment class, which represents a body segment
+(e.g., pelvis, femur, tibia) in the Vicon system.
+
+A Segment contains:
+    - Static properties (scale, initial pose)
+    - Global pose (position and orientation in world space)
+    - Local pose (position and orientation relative to parent)
+    - Hierarchy information (parent and children)
+
+Segments are used when working with the full Vicon skeletal model.
+For marker-based kinematics only, segments are optional.
+
+Author: Daniil Grubich
+Institution: Wayne State University - R2B Lab
+"""
+
+# ============================================================================
+# SEGMENT CLASS
+# ============================================================================
+
 class Segment:
     def __init__(self, subjectName, name):
         """

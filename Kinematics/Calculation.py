@@ -1,4 +1,31 @@
+"""
+Kinematics Calculation Module
+
+This module provides fundamental geometric and mathematical functions for
+biomechanical kinematics calculations.
+
+Functions:
+    - transform_using_transformation_matrix(): Apply 4x4 transformation to points
+    - compute_segment_vector(): Calculate vector between two markers
+    - calculate_2d_angle(): Compute angle between two 2D vectors
+    - calculate_distance(): Compute Euclidean distance between two points
+
+These functions are used by the MarkerKinematics module to compute joint angles
+and positions from marker data.
+
+Author: Daniil Grubich
+Institution: Wayne State University - R2B Lab
+"""
+
+# ============================================================================
+# IMPORTS
+# ============================================================================
+
 import numpy as np
+
+# ============================================================================
+# TRANSFORMATION FUNCTIONS
+# ============================================================================
 
 def transform_using_transformation_matrix(transformation_matrix, points):
     """

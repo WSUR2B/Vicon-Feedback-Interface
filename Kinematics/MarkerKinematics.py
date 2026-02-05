@@ -1,12 +1,48 @@
+"""
+MarkerKinematics Module - Joint Angle Calculation from Motion Capture Markers
+
+This module calculates lower extremity joint angles from motion capture marker
+positions using biomechanical modeling techniques.
+
+Implementation Details:
+    Currently implements the Plug-in Gait marker set with Quality Level 0 (Q0),
+    which calculates joint angles in the sagittal, frontal, and transverse planes
+    for the hip, knee, and ankle joints.
+
+Marker Set Requirements:
+    - Pelvis: LASI, RASI, LPSI, RPSI
+    - Lower extremity: LKNE, RKNE, LANK, RANK
+    - Foot: LHEE, RHEE, LTOE, RTOE
+
+Calculated Angles:
+    - Hip flexion/extension (sagittal plane)
+    - Hip adduction/abduction (frontal plane)  
+    - Hip internal/external rotation (transverse plane)
+    - Knee flexion/extension
+    - Ankle dorsiflexion/plantarflexion
+    - Subtalar angle (foot inversion/eversion)
+
+Features:
+    - Real-time filtering of angle data
+    - Zero position calibration
+    - Hip joint center calculation using regression equations
+    - Pelvis coordinate system transformation
+
+Author: Daniil Grubich
+Institution: Wayne State University - R2B Lab
+"""
+
+# ============================================================================
+# IMPORTS
+# ============================================================================
+
 import Kinematics.Calculation as calc
 from Filters import MyFilter
 import numpy as np
 
-
-"""
-MarkerKinematics contains various classes for performing kinematics calculations with different marker sets and qualities.
-
-"""
+# ============================================================================
+# MARKER KINEMATICS CLASSES
+# ============================================================================
 
 class MarkerKinematicsPlugInSetQ0:
     """
@@ -116,10 +152,14 @@ class MarkerKinematicsPlugInSetQ0:
         #Pelvis vars
         self.pelvisTransformation = np.array([])
 
-        #Filters For angles
+        # Filters for angle data
         self.filters = {}
         for angle in self.anglesZeroDictionary:
             self.filters[angle] = MyFilter(1, 1, 'none')
+    
+    # ========================================================================
+    # CALIBRATION AND FILTER METHODS
+    # ========================================================================
         
     def recordZeroPosition(self):
         """
@@ -176,15 +216,24 @@ class MarkerKinematicsPlugInSetQ0:
         """
         return self.filters[filterName].filter(data)
 
+    # ========================================================================
+    # DATA UPDATE AND CALCULATION METHODS
+    # ========================================================================
+    
     def updateWithSubject(self, markerDictionary):
         """
-        Updates the marker dictionary and calculates joint positions and angles based on the provided marker dictionary.
+        Update marker positions and calculate all joint angles.
+
+        This is the main update method called each frame. It:
+        1. Updates marker positions
+        2. Calculates pelvis transformation
+        3. Calculates hip joint centers
+        4. Calculates all joint angles
+        5. Applies filters
+        6. Handles zero position calibration
 
         Args:
-            markerDictionary (dict): A dictionary containing marker names as keys and marker positions as values.
-
-        Returns:
-            None
+            markerDictionary (dict): Dictionary mapping marker names to 3D positions
         """
         requiredMarkers = set(self.markerDictionary.keys())
         #select field from markerDictionary
@@ -269,6 +318,10 @@ class MarkerKinematicsPlugInSetQ0:
             self.pendingZerowing = False
             for angle in self.anglesDictionary:
                 self.anglesZeroDictionary[angle] = self.anglesDictionary[angle]+self.anglesZeroDictionary[angle]
+    
+    # ========================================================================
+    # JOINT ANGLE CALCULATION METHODS
+    # ========================================================================
         
     def getHipAngles(self):
         """
@@ -422,9 +475,13 @@ class MarkerKinematicsPlugInSetQ0:
 
 
 
+    # ========================================================================
+    # BIOMECHANICAL MODEL CALCULATIONS
+    # ========================================================================
+    
     def get_pelvis_position(self, LASI, RASI):
         """
-        Calculates the position of the pelvis as the midpoint between the LASI and RASI markers.
+        Calculate the pelvis origin as the midpoint between LASI and RASI markers.
 
         Parameters:
         LASI (numpy.ndarray): The position of the LASI marker.

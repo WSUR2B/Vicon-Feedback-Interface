@@ -1,122 +1,300 @@
+"""
+Vicon Data Interface - Real-time Motion Capture Data Processing and Visualization
+
+This application provides a comprehensive interface for capturing, processing, visualizing,
+and exporting real-time data from Vicon motion capture systems. It is designed for
+biomechanics research and clinical applications.
+
+Key Features:
+    - Real-time data streaming from Vicon motion capture systems
+    - Joint angle calculations for lower extremity kinematics
+    - Data visualization with customizable plotting
+    - Multiple data export modes (duration-based, manual, windowed)
+    - UDP streaming for integration with external applications
+    - Configurable signal filtering (bandpass, moving average, moving median, Kalman)
+    - Real-time visual feedback for biofeedback applications
+
+Architecture:
+    - MainTask: Core processing loop coordinating all operations
+    - Plotting: Real-time visualization of angles and device data
+    - Exporting: Data recording and CSV export functionality
+    - Streaming: UDP communication for external applications
+    - Feedback: Visual biofeedback system for real-time monitoring
+
+Dependencies:
+    - PySide6: GUI framework
+    - numpy: Numerical computations
+    - pandas: Data management and export
+    - vicon_dssdk: Vicon DataStream SDK
+    - scipy: Signal processing
+
+Author: Daniil Grubich
+Institution: Wayne State University - R2B Lab
+"""
+
+# ============================================================================
+# IMPORTS
+# ============================================================================
+
+# Standard library imports
 import sys
+import time
+import os
+import socket
+import struct
+import threading
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem, QTreeWidget, QHeaderView, QTableWidgetItem, QWidget
+# Third-party imports
+import numpy as np
+import pandas as pd
+from tkinter import filedialog
 
+# PySide6 (Qt) imports
+from PySide6.QtWidgets import (QApplication, QMainWindow, QTreeWidgetItem, 
+                               QTreeWidget, QHeaderView, QTableWidgetItem, QWidget)
+from PySide6.QtOpenGLWidgets import QOpenGLWidget
+from PySide6.QtCore import QTimer, Qt
+from OpenGL.GL import *
+from OpenGL.GLU import *
+
+# Local application imports
 from GUI.MainWindow_ui import Ui_MainWindow
 from GUI.FeedbackWindow_ui import Ui_Form
 from GUI.FeedbackGraph import FeedbackGraph
 from GUI.MyOpenGLCharting import MyCharting
-
-import time
-
-import threading
 from ViconWrapper.ViconWrapper import ViconWrapper
-# from WindowFilters import WindowFilter
-
 import Kinematics.Calculation as calc
 import Filters as filters
 
-import numpy as np
 
-from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtCore import QTimer
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from PySide6.QtCore import Qt
-
-import pandas as pd
-import os
-from tkinter import filedialog
-
-import socket
-import struct
-
+# ============================================================================
+# DATA VISUALIZATION CLASSES
+# ============================================================================
 
 class Plotting:
+    """
+    Manages real-time plotting of joint angles and device data.
+    
+    This class handles the visualization of up to two joint angles and one device
+    data stream simultaneously. It supports real-time filtering of device data
+    and integrates with the OpenGL-based charting system.
+    
+    Attributes:
+        myChart (MyCharting): The OpenGL chart widget for rendering
+        Angle1 (str): Name of the first angle to plot (e.g., 'LHip')
+        Angle2 (str): Name of the second angle to plot (e.g., 'RKnee')
+        deviceData (list): Device data specification [device, channel, component]
+        deviceFilter (MyFilter): Filter applied to device data before plotting
+        
+    Methods:
+        clearAll(): Clears all data series from the chart
+        updateDeviceFilterType(): Configures the device data filter
+        updatePlotting(): Updates all data series for the current frame
+        addAnglesToPlot(): Adds angle data points to the chart
+        addDeviceDataToPlot(): Adds device data points to the chart
+    """
+    
     def __init__(self, myChart):
+        """
+        Initialize the plotting system.
+        
+        Args:
+            myChart (MyCharting): The OpenGL chart widget to use for rendering
+        """
         self.myChart = myChart
+        # Set initial chart range: X-axis (0-1000 frames), Y-axis (-90 to 90 degrees)
         self.myChart.setCustomXYAxis(0, 1000, -90, 90)
         self.myChart.series1.setName("Angle 1")
         self.myChart.series2.setName("Angle 2")
         self.myChart.series3.setName("Device Data")
 
-        self.Angle1 = "" #name of the angle to draw
-        self.Angle2 = "" #name of the angle to draw
-        self.deviceData = [] #ex [device][channel][component]
+        # Data stream selections
+        self.Angle1 = ""  # Name of the first angle to draw (e.g., 'LHip')
+        self.Angle2 = ""  # Name of the second angle to draw (e.g., 'RKnee')
+        self.deviceData = []  # Format: [device, channel, component]
+        
+        # Initialize device data filter (default: no filtering)
         self.deviceFilter = filters.MyFilter(1, 1, "none")
 
     def clearAll(self):
+        """Clear all data series from the chart."""
         self.myChart.clearAllSeries()
 
     def updateDeviceFilterType(self, windowSize, sampleRate, filterType, lowCut, highCut):
+        """
+        Update the filter configuration for device data.
+        
+        Args:
+            windowSize (int): Number of samples in the filter window
+            sampleRate (float): Sampling frequency in Hz
+            filterType (str): Type of filter ('none', 'bandpass', 'moving_average', 'moving_median')
+            lowCut (float): Lower cutoff frequency for bandpass filter (Hz)
+            highCut (float): Upper cutoff frequency for bandpass filter (Hz)
+        """
         self.deviceFilter = filters.MyFilter(windowSize, sampleRate, filterType, lowCut, highCut)
 
     def updatePlotting(self, frameNumber, vicon):
-        # print("Updating Plotting")
-        # print(self.Angle1, self.Angle2, self.deviceData)
+        """
+        Update all plot series with data from the current frame.
+        
+        This method orchestrates the addition of both angle and device data to the chart.
+        It checks if a subject exists before attempting to plot angle data.
+        
+        Args:
+            frameNumber (int): Current frame number for X-axis positioning
+            vicon (ViconWrapper): Vicon data source containing subject and device data
+        """
+        # Add angle data if a subject is present
         if vicon.subjectExists():
             activeSubject = vicon.getSubject(vicon.subjects[0].name)
             self.addAnglesToPlot(frameNumber, activeSubject)
             
+        # Add device data
         self.addDeviceDataToPlot(frameNumber, vicon)
+        
+        # Finalize the frame update
         self.myChart.finalize()
 
     def addAnglesToPlot(self, frameNumber, activeSubject):
+        """
+        Add angle data points to the chart series.
+        
+        Only adds data for angles that are selected (angleFlags = True) and have
+        valid data available in the subject's kinematics dictionary.
+        
+        Args:
+            frameNumber (int): Current frame number for X-axis positioning
+            activeSubject (Subject): Subject object containing kinematic data
+        """
+        # Add first angle if selected and available
         if self.Angle1 != "":
+            # Check if angle is enabled and has valid data
             if self.Angle1[1:] in activeSubject.kinematics.angleFlags and activeSubject.kinematics.angleFlags[self.Angle1[1:]]:
                 self.myChart.addData(1, frameNumber, activeSubject.kinematics.anglesDictionary[self.Angle1])
+        
+        # Add second angle if selected and available
         if self.Angle2 != "":
             if self.Angle2[1:] in activeSubject.kinematics.angleFlags and activeSubject.kinematics.angleFlags[self.Angle2[1:]]:
                 self.myChart.addData(2, frameNumber, activeSubject.kinematics.anglesDictionary[self.Angle2])
 
     def addDeviceDataToPlot(self, frameNumber, vicon):
+        """
+        Add device data points to the chart series.
+        
+        Applies filtering to device data before plotting. Handles multiple data points
+        per frame (e.g., when device sampling rate exceeds mocap frame rate).
+        
+        Args:
+            frameNumber (int): Current frame number for X-axis positioning
+            vicon (ViconWrapper): Vicon data source containing device data
+        """
+        # Validate device data selection
         if self.deviceData == ['','',''] or self.deviceData == ['None', 'None', 'None'] or self.deviceData == []:
             return
         
-        #check if device exists
+        # Check if device exists in the system
         if self.deviceData[0] not in vicon.devices:
             return
         
-        #check that the device is online
+        # Check that the device is online and streaming
         if not vicon.devices[self.deviceData[0]]["Online"]:
             return
         
+        # Get device data values for current frame
         data = vicon.devices[self.deviceData[0]]["Data"][self.deviceData[1]][self.deviceData[2]]['values'][0]
+        
+        # Apply filtering and add each data point to chart
+        # Interpolate X-axis position for multiple samples per frame
         for i in range(len(data)):
             data[i] = self.deviceFilter.filter(data[i])
-            self.myChart.addData(3, frameNumber - 1 + i/len(data) ,data[i])
+            self.myChart.addData(3, frameNumber - 1 + i/len(data), data[i])
+
+# ============================================================================
+# DATA EXPORT MANAGEMENT
+# ============================================================================
 
 class Exporting:
-    def __init__(self):
-        self.angleExportList = [] #ex [angle]
-        self.angleExportFrame = pd.DataFrame()
-
-        self.deviceExportList = [] #ex [device][channel]
-        self.deviceExportFrames = {} #keys "device:channel"
-
+    """
+    Manages data recording and CSV export functionality.
+    
+    This class handles three recording modes:
+        1. Manual: User-controlled start/stop recording
+        2. Duration: Timed recording for specified duration
+        3. Window: Records data for the duration of the plot window
+    
+    Supports exporting both joint angle data and device channel data to separate
+    CSV files with automatic file naming and indexing.
+    
+    Attributes:
+        angleExportList (list): List of angle names to export (e.g., ['Hip', 'Knee'])
+        angleExportFrame (DataFrame): Accumulated angle data for current recording
+        deviceExportList (list): List of [device, channel] pairs to export
+        deviceExportFrames (dict): Accumulated device data, keyed by "device:channel"
+        isRecording (bool): Current recording state
+        savingIndex (int): Manual file index for non-auto naming
+        savingAutoIndex (bool): Enable automatic file index incrementing
+        filename (str): Base filename for exported files
+        saveAllDeviceData (bool): If True, export all samples; if False, export last sample only
+        savePath (str): Directory path for exported files
+        recordingStartTime (float): Timestamp when recording started (seconds)
+        recordingDuration (float): Target duration for timed recording (seconds)
         
-        #exporting variables and flags
+    Methods:
+        startTimedRecording(): Begins a duration-based recording
+        saveDataToCSV(): Exports accumulated data to CSV files
+        updateExporting(): Processes current frame data during recording
+        addAnglesToExport(): Adds angle data to export buffer
+        addDeviceDataToExport(): Adds device data to export buffer
+    """
+    
+    def __init__(self):
+        """Initialize the data export system with default settings."""
+        # Data collection buffers
+        self.angleExportList = []  # List of angle names to export
+        self.angleExportFrame = pd.DataFrame()  # Accumulated angle data
+
+        self.deviceExportList = []  # List of [device, channel] pairs to export
+        self.deviceExportFrames = {}  # Dict with keys "device:channel"
+
+        # Recording control flags
         self.isRecording = False
-        self.savingIndex = 0
-        self.savingAutoIndex = True
+        self.savingIndex = 0  # Manual file index
+        self.savingAutoIndex = True  # Enable automatic index incrementing
         self.filename = "Recording"
-        self.saveAllDeviceData = False
-        #default export path is the current directory of the main file
+        self.saveAllDeviceData = False  # Export all samples vs. last sample only
+        
+        # Default export path is the current directory
         self.savePath = os.path.dirname(os.path.realpath(__name__))
 
-        self.recordingStartTime = 0 #in seconds
-        self.recordingDuration = 0 # in seconds
+        # Timed recording parameters
+        self.recordingStartTime = 0  # Start timestamp in seconds
+        self.recordingDuration = 0  # Target duration in seconds
 
     def startTimedRecording(self, duration):
+        """
+        Start a timed recording session.
+        
+        Args:
+            duration (float): Recording duration in seconds
+        """
         self.isRecording = True
         self.recordingDuration = duration
         self.recordingStartTime = time.time()
 
-
     def saveDataToCSV(self):
+        """
+        Export accumulated data to CSV files.
+        
+        Creates separate CSV files for angle data and each device/channel combination.
+        Implements automatic file indexing to prevent overwriting existing files.
+        Files are named as: {filename}_angles[_index].csv and {filename}_{device}_{channel}[_index].csv
+        
+        The method clears all data buffers after successful export.
+        """
         name = self.filename
         fullSavePath = ""
-        #saving angles
+        
+        # ---- Export angle data ----
         if not self.savingAutoIndex:
             if self.savingIndex == 0:
                 fullSavePath = os.path.join(self.savePath, name + "_angles.csv")
@@ -170,122 +348,258 @@ class Exporting:
         self.recordingDuration = 0
 
     def updateExporting(self, frameNumber, vicon):
+        """
+        Process current frame data during an active recording session.
+        
+        Checks if timed recording has completed, and if so, stops recording and saves data.
+        Collects angle and device data from the current frame and adds to export buffers.
+        
+        Args:
+            frameNumber (int): Current frame number
+            vicon (ViconWrapper): Vicon data source containing subject and device data
+        """
+        # Check if timed recording duration has elapsed
         if time.time() - self.recordingStartTime >= self.recordingDuration and self.recordingDuration != 0:
             self.isRecording = False
             self.saveDataToCSV()
             addToLog("Recording Stopped")
             addToLog("Files Saved To: " + self.savePath)
 
+        # Collect angle data if subject exists
         if vicon.subjectExists():
             activeSubject = vicon.getSubject(vicon.subjects[0].name)
             self.addAnglesToExport(frameNumber, activeSubject)
         
+        # Collect device data
         self.addDeviceDataToExport(frameNumber, vicon)
 
     def addAnglesToExport(self, frameNumber, activeSubject):
+        """
+        Add current frame's angle data to the export buffer.
+        
+        Collects left and right side angles for all selected angles from the subject's
+        kinematics dictionary and appends them to the angle export DataFrame.
+        
+        Args:
+            frameNumber (int): Current frame number
+            activeSubject (Subject): Subject object containing kinematic data
+        """
+        # Create new row with frame number
         new_row_dict = {'Frame': [frameNumber]}
+        
+        # Add left and right angles for each selected angle type
         for angle in self.angleExportList:
             new_row_dict['L'+angle] = [activeSubject.kinematics.anglesDictionary['L'+angle]]
             new_row_dict['R'+angle] = [activeSubject.kinematics.anglesDictionary['R'+angle]]
 
+        # Append to DataFrame
         new_row = pd.DataFrame(new_row_dict)
         self.angleExportFrame = pd.concat([self.angleExportFrame, new_row], ignore_index=True)
 
     def addDeviceDataToExport(self, frameNumber, vicon):
+        """
+        Add current frame's device data to the export buffer.
+        
+        Handles two export modes:
+            - saveAllDeviceData=True: Exports all samples in the frame (for high-rate devices)
+            - saveAllDeviceData=False: Exports only the last sample per frame
+        
+        Args:
+            frameNumber (int): Current frame number
+            vicon (ViconWrapper): Vicon data source containing device data
+        """
         for deviceName, channel in self.deviceExportList:
+            # Get all component names for this device/channel
             listOfComponents = list(vicon.devices[deviceName]["Data"][channel].keys())
-            listOfComponents.remove("Online")
+            listOfComponents.remove("Online")  # Remove the status flag
 
+            # Initialize DataFrame for this device/channel if not exists
             if f"{deviceName}:{channel}" not in self.deviceExportFrames:
                 self.deviceExportFrames[f"{deviceName}:{channel}"] = pd.DataFrame()
 
+            # Export mode: Save all samples per frame (for high sampling rate devices)
             if self.saveAllDeviceData:
+                # Iterate through all samples in current frame
                 for i in range(len(vicon.devices[deviceName]["Data"][channel][listOfComponents[0]]['values'][0])):
+                    # Interpolate frame number for sub-frame timing
                     new_dict_row = {'Frame': [frameNumber-1+i/len(vicon.devices[deviceName]["Data"][channel][listOfComponents[0]]['values'][0])]}
+                    
+                    # Add each component's value for this sample
                     for component in listOfComponents:
                         new_dict_row[component] = [vicon.devices[deviceName]["Data"][channel][component]['values'][0][i]]
+                    
                     new_row = pd.DataFrame(new_dict_row)
                     self.deviceExportFrames[f"{deviceName}:{channel}"] = pd.concat([self.deviceExportFrames[f"{deviceName}:{channel}"], new_row], ignore_index=True)
+            
+            # Export mode: Save only the last sample per frame
             else:
                 new_dict_row = {'Frame': [frameNumber]}
+                
+                # Add each component's last value
                 for component in listOfComponents:
                     new_dict_row[component] = [vicon.devices[deviceName]["Data"][channel][component]['values'][0][-1]]
+                
                 new_row = pd.DataFrame(new_dict_row)
                 self.deviceExportFrames[f"{deviceName}:{channel}"] = pd.concat([self.deviceExportFrames[f"{deviceName}:{channel}"], new_row], ignore_index=True)
 
+# ============================================================================
+# UDP STREAMING SYSTEM
+# ============================================================================
+
 class Streaming:
+    """
+    Manages UDP streaming of real-time data to external applications.
+    
+    Streams data packets over UDP containing joint angles and device measurements.
+    Each data point is sent as a fixed-size packet with format:
+        [Label (variable length) | Padding (spaces) | Value (fixed length) | '$' terminator]
+    
+    Supports optional filtering of device data before transmission.
+    
+    Attributes:
+        sock (socket): UDP socket for data transmission
+        UDPErrorCount (int): Consecutive transmission error counter
+        IsStreamingUDP (bool): Current streaming state
+        UDPHost (str): Target IP address
+        UDPPort (int): Target port number
+        packetSize (int): Total packet size in bytes (excluding terminator)
+        valueSize (int): Size allocated for numerical value in packet
+        deviceStreamList (list): List of [device, channel, component] to stream
+        angleStreamList (list): List of angle names to stream (e.g., 'LHip', 'RKnee')
+        deviceFilterList (dict): Filter objects keyed by "device:channel:component"
+        filterType (str): Type of filter to apply to device data
+        windowSize (int): Filter window size
+        sampleRate (float): Data sampling rate in Hz
+        lowCut (float): Low-frequency cutoff for bandpass filter
+        highCut (float): High-frequency cutoff for bandpass filter
+        
+    Methods:
+        updateDeviceFilterType(): Reconfigure device data filters
+        updateStream(): Send current frame data over UDP
+        sendAngleOverUDP(): Transmit angle data packets
+        sendDeviceDataOverUDP(): Transmit device data packets
+        sendOverUDP(): Low-level packet transmission
+        startUDPStream(): Initialize UDP socket and begin streaming
+        stopUDPStream(): Close socket and end streaming
+    """
+    
     def __init__(self, targetIP = "127.0.0.1", port = 5005):
-        #UDP Streaming
-        self.sock = []
+        """
+        Initialize the UDP streaming system.
+        
+        Args:
+            targetIP (str): Target IP address (default: localhost)
+            port (int): Target port number (default: 5005)
+        """
+        # UDP socket configuration
+        self.sock = []  # Will hold socket object when streaming
         self.UDPErrorCount = 0
         self.IsStreamingUDP = False
         self.UDPHost = targetIP
         self.UDPPort = port
 
-        self.packetSize = 50
-        self.valueSize = 10
-        self.deviceStreamList = [] #ex [device][channel][component]
+        # Packet format configuration
+        self.packetSize = 50  # Total packet size excluding terminator
+        self.valueSize = 10  # Size allocated for numerical value
+        
+        # Data selection for streaming
+        self.deviceStreamList = []  # Format: [device, channel, component]
+        self.angleStreamList = []  # Format: 'LHip', 'RKnee', etc.
 
+        # Filter configuration for device data
         self.filterType = "none"
         self.windowSize = 101
         self.sampleRate = 100
         self.lowCut = .01
         self.highCut = 29
 
-
+        # Filter instances for each device stream
         self.deviceFilterList = {}
-        self.angleStreamList = [] #ex [Side]+[angle] LHip
 
     def updateDeviceFilterType(self, windowSize, sampleRate, filterType, lowCut, highCut):
+        """
+        Update filter configuration for all device streams.
+        
+        Reinitializes all device filters with new parameters. Existing filter states are reset.
+        
+        Args:
+            windowSize (int): Number of samples in filter window
+            sampleRate (float): Sampling frequency in Hz
+            filterType (str): Type of filter ('none', 'bandpass', 'moving_average', 'moving_median')
+            lowCut (float): Lower cutoff frequency for bandpass filter (Hz)
+            highCut (float): Upper cutoff frequency for bandpass filter (Hz)
+        """
+        # Store filter parameters
         self.filterType = filterType
         self.windowSize = windowSize
         self.sampleRate = sampleRate
         self.lowCut = lowCut
         self.highCut = highCut
 
-
-        self.deviceFilterList = {}  # Reset the filter list
-
+        # Reset and reinitialize all filters
+        self.deviceFilterList = {}
         for deviceName, channel, component in self.deviceStreamList:
             deviceLabel = deviceName + ":" + channel + ":" + component
             self.deviceFilterList[deviceLabel] = filters.MyFilter(windowSize, sampleRate, filterType, lowCut, highCut)
 
     def updateStream(self, vicon):
+        """
+        Send current frame data over UDP.
+        
+        Transmits angle data if a subject is present, followed by device data.
+        Only operates when streaming is active.
+        
+        Args:
+            vicon (ViconWrapper): Vicon data source containing subject and device data
+        """
         if not self.IsStreamingUDP:
             return
         
+        # Send angle data if subject exists
         if vicon.subjectExists():
             activeSubject = vicon.getSubject(vicon.subjects[0].name)
             self.sendAngleOverUDP(activeSubject)
         
+        # Send device data
         self.sendDeviceDataOverUDP(vicon)
-
-        # for filter in self.deviceFilterList:
-        #     print(f"Applying filter {self.deviceFilterList[filter].filter_type} to {filter}")
 
 
     def sendAngleOverUDP(self, activeSubject):
+        """
+        Transmit angle data packets over UDP.
+        
+        Creates and sends one packet per angle. Packet format:
+            [AngleName | Padding | AngleValue | '$']
+        
+        Args:
+            activeSubject (Subject): Subject containing kinematic data
+        """
         for angle in self.angleStreamList:
             angleName = angle
             angleNameSize = len(angleName)
             angleValue = activeSubject.kinematics.anglesDictionary[angle]
-            #convert angle to string with set length
+            
+            # Convert angle value to fixed-length string
             angleValue = str(angleValue)
             angleValue = angleValue[:self.valueSize]
+            
+            # Pad with zeros if shorter than valueSize
             if len(angleValue) < self.valueSize:
                 angleValue = angleValue + "0"*(self.valueSize-len(angleValue))
 
-            #create a packet to store character data
+            # Create packet with spaces for padding
             packet = " "*self.packetSize
 
-            #add angle name at the beginning of the packet
+            # Insert angle name at beginning
             packet = angleName + packet[angleNameSize:]
+            
+            # Insert value at end of packet (before terminator)
             packet = packet[:self.packetSize-self.valueSize] + angleValue
             
-            #add $ to the end of the packet
+            # Add terminator
             packet = packet + "$"
 
-            # print(packet)
+            # Send the packet
             self.sendOverUDP(packet)
 
 
@@ -294,36 +608,61 @@ class Streaming:
 
 
     def sendDeviceDataOverUDP(self, vicon):
+        """
+        Transmit device data packets over UDP.
+        
+        Creates and sends one packet per device/channel/component. Packet format:
+            [DeviceLabel | Padding | DataValue | '$']
+        where DeviceLabel = "Device:Channel:Component"
+        
+        Args:
+            vicon (ViconWrapper): Vicon data source containing device data
+        """
         for deviceName, channel, component in self.deviceStreamList:
+            # Create composite label for device data
             deviceLabel = deviceName + ":" + channel + ":" + component
             deviceLabelSize = len(deviceLabel)
 
-
+            # Get the most recent data value
             deviceData = vicon.devices[deviceName]["Data"][channel][component]['values'][0][-1]
-            # deviceData = self.deviceFilterList[deviceLabel].filter(deviceData)
+            
+            # Convert to fixed-length string
             deviceData = str(deviceData)
             deviceData = deviceData[:self.valueSize]
-            if len(deviceData) < self.valueSize: #add 0s to the end of the string
+            
+            # Pad with zeros if shorter than valueSize
+            if len(deviceData) < self.valueSize:
                 deviceData = deviceData + "0"*(self.valueSize-len(deviceData))
 
+            # Create packet with spaces for padding
             packet = " "*self.packetSize
 
+            # Insert device label at beginning
             packet = deviceLabel + packet[deviceLabelSize:]
+            
+            # Insert value at end of packet (before terminator)
             packet = packet[:self.packetSize-self.valueSize] + deviceData
 
-            #add $ to the end of the packet
+            # Add terminator
             packet = packet + "$"
 
-            # print(packet)
+            # Send the packet
             self.sendOverUDP(packet)
 
     def sendOverUDP(self, data):
+        """
+        Low-level UDP packet transmission.
+        
+        Handles error counting and automatic stream shutdown after 3 consecutive failures.
+        
+        Args:
+            data (str): Packet string to transmit
+        """
         try:
-            #data is a string, convert to bytes
+            # Convert string to bytes for transmission
             data = data.encode('utf-8')
-            # packed_data = struct.pack(f"{len(data)}s", data)
 
-            # Send the packed data via UDP
+            # Send via UDP socket
             self.sock.sendto(data, (self.UDPHost, self.UDPPort))
             self.UDPErrorCount = 0
 
@@ -331,103 +670,235 @@ class Streaming:
             self.UDPErrorCount += 1
             addToLog(f"Error Sending Data Over UDP - attempt {self.UDPErrorCount}")
 
+            # Stop streaming after 3 consecutive errors
             if self.UDPErrorCount >= 3:
                 self.stopUDPStream()
 
     def startUDPStream(self):
+        """
+        Initialize UDP socket and begin streaming.
+        
+        Creates a new UDP socket and sets the streaming flag.
+        """
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.IsStreamingUDP = True
         addToLog("UDP Streaming Started")
 
     def stopUDPStream(self):
+        """
+        Close UDP socket and end streaming.
+        
+        Closes the socket and clears the streaming flag.
+        """
         self.IsStreamingUDP = False
         self.sock.close()
         addToLog("UDP Streaming Stopped")
     
+# ============================================================================
+# VISUAL FEEDBACK SYSTEM
+# ============================================================================
+
 class Feedback:
+    """
+    Manages real-time visual feedback display for biofeedback applications.
+    
+    Displays a single data value on a visual feedback graph with configurable
+    target ranges. Can display either a single angle or a single device measurement.
+    
+    Attributes:
+        feedbackGraph (FeedbackGraph): Visual feedback widget
+        currentValue (float): Current value being displayed
+        deviceFeedbackList (list): List of [device, channel, component] for feedback
+        angleFeedbackList (list): List of angle names for feedback (e.g., 'LHip')
+        
+    Methods:
+        updateFeedback(): Update feedback display with current frame data
+        updateAnglesFeedback(): Process angle data for feedback
+        updateDeviceDataFeedback(): Process device data for feedback
+        setCurrentValue(): Update the displayed value
+    
+    Note:
+        Only one value (angle or device) should be selected at a time for feedback.
+    """
+    
     def __init__(self, feedbackGraph):
+        """
+        Initialize the feedback system.
+        
+        Args:
+            feedbackGraph (FeedbackGraph): Visual feedback widget
+        """
         self.feedbackGraph = feedbackGraph
         self.currentValue = 0
 
-        self.deviceFeedbackList = [] #ex [device][channel][component]
-        self.angleFeedbackList = [] #ex [Side]+[angle] LHip
+        # Data selections for feedback (should be mutually exclusive)
+        self.deviceFeedbackList = []  # Format: [device, channel, component]
+        self.angleFeedbackList = []  # Format: 'LHip', 'RKnee', etc.
 
     def updateFeedback(self, vicon):
-            if self.deviceFeedbackList == [] and self.angleFeedbackList == []:
-                return
-            
-            if vicon.subjectExists():
-                activeSubject = vicon.getSubject(vicon.subjects[0].name)
-                self.updateAnglesFeedback(activeSubject)
-            
-            self.updateDeviceDataFeedback(vicon)
-
+        """
+        Update feedback display with current frame data.
+        
+        Checks both angle and device lists and updates the display with
+        the first available data source.
+        
+        Args:
+            vicon (ViconWrapper): Vicon data source
+        """
+        # Skip if no feedback sources are selected
+        if self.deviceFeedbackList == [] and self.angleFeedbackList == []:
+            return
+        
+        # Update angle feedback if subject exists
+        if vicon.subjectExists():
+            activeSubject = vicon.getSubject(vicon.subjects[0].name)
+            self.updateAnglesFeedback(activeSubject)
+        
+        # Update device feedback
+        self.updateDeviceDataFeedback(vicon)
 
     def updateAnglesFeedback(self, activeSubject):
+        """
+        Update feedback display with angle data.
+        
+        Args:
+            activeSubject (Subject): Subject containing kinematic data
+        """
         for angle in self.angleFeedbackList:
             angleValue = activeSubject.kinematics.anglesDictionary[angle]
             self.setCurrentValue(angleValue)
 
-
     def updateDeviceDataFeedback(self, vicon):
+        """
+        Update feedback display with device data.
+        
+        Args:
+            vicon (ViconWrapper): Vicon data source containing device data
+        """
         for deviceName, channel, component in self.deviceFeedbackList:
             deviceData = vicon.devices[deviceName]["Data"][channel][component]['values'][0][-1]
             self.setCurrentValue(deviceData)
 
-
     def setCurrentValue(self, value):
+        """
+        Update the displayed value on the feedback graph.
+        
+        Args:
+            value (float): New value to display
+        """
         self.currentValue = value
         self.feedbackGraph.setCurrentValue(self.currentValue)
-        # print(self.currentValue)
 
-#Like OpenGL main loop, but witough OpenGLRenderering
+# ============================================================================
+# MAIN PROCESSING LOOP
+# ============================================================================
+
 class MainTask:
+    """
+    Core processing loop coordinating all application subsystems.
+    
+    This class orchestrates the real-time data flow from Vicon through filtering,
+    visualization, export, streaming, and feedback systems. Runs continuously at
+    approximately 1000 Hz to minimize latency.
+    
+    Subsystems managed:
+        - Plotting: Real-time visualization
+        - Exporting: Data recording to CSV
+        - Streaming: UDP transmission to external apps
+        - Feedback: Visual biofeedback display
+    
+    Attributes:
+        frame_count (int): Frame counter for FPS calculation
+        start_time (float): Timestamp for FPS calculation
+        activeSubject (Subject): Currently tracked subject
+        filterType (str): Type of angle filter
+        filterWindow (int): Angle filter window size
+        filterLowCut (float): Angle filter low cutoff (Hz)
+        filterHighCut (float): Angle filter high cutoff (Hz)
+        filterSampleRate (float): Angle filter sample rate (Hz)
+        setFilterFlag (bool): Flag to trigger filter reconfiguration
+        plotting (Plotting): Visualization subsystem
+        maxFrames (int): Plot window size in frames
+        exporting (Exporting): Data export subsystem
+        windowRecordingMode (bool): True when window recording is active
+        pendingWindowData (bool): True when window recording is pending
+        streaming (Streaming): UDP streaming subsystem
+        feedback (Feedback): Visual feedback subsystem
+        lastViconFrame (int): Previous Vicon frame number
+        currentViconFrame (int): Current Vicon frame number
+        
+    Methods:
+        runFrame(): Process one frame of data through all subsystems
+        tickFPS(): Update FPS displays
+        zeroSubjectAngles(): Zero the current joint angles
+    """
     
     def __init__(self):
+        """Initialize the main processing loop and all subsystems."""
+        # FPS calculation
         self.frame_count = 0
         self.start_time = time.time()
 
-        
+        # Subject tracking
         self.activeSubject = None
 
+        # Angle filter configuration
         self.filterType = "none"
         self.filterWindow = 101
         self.filterLowCut = .01
         self.filterHighCut = 29
         self.filterSampleRate = 100
-        self.setFilterFlag = False
+        self.setFilterFlag = False  # Trigger for filter update
 
+        # Initialize subsystems
         self.plotting = Plotting(myChart)
-        self.maxFrames = 1000
+        self.maxFrames = 1000  # Plot window size
 
         self.exporting = Exporting()
-        self.windowRecordingMode = False
-        self.pendingWindowData = False
+        self.windowRecordingMode = False  # Window recording active
+        self.pendingWindowData = False  # Window recording pending
 
         self.streaming = Streaming()
 
         self.feedback = Feedback(feedbackGraph)
 
+        # Frame tracking for plot clearing
         self.lastViconFrame = 0
         self.currentViconFrame = 0
 
     def runFrame(self):
+        """
+        Process one frame of data through all subsystems.
+        
+        This method is called continuously by the Qt timer (~1000 Hz) and:
+        1. Retrieves latest frame from Vicon
+        2. Updates active subject and applies filters if needed
+        3. Routes data to plotting, exporting, streaming, and feedback
+        4. Manages window recording mode
+        5. Updates FPS displays
+        6. Processes Qt events
+        
+        The method handles frame rollover for continuous plotting and manages
+        the window recording start/stop logic.
+        """
         global vicon
 
-
+        # Get latest frame from Vicon
         vicon.updateFrame()
         start_time = time.time()
 
-    
-        self.lastViconFrame = self.currentViconFrame    #used for clearning the plot 
-        self.currentViconFrame = vicon.frameNumber      #used for clearning the plot
+        # Track frame numbers for plot clearing
+        self.lastViconFrame = self.currentViconFrame
+        self.currentViconFrame = vicon.frameNumber
 
+        # Clear plot when frame counter rolls over
         if self.lastViconFrame%self.maxFrames > self.currentViconFrame%self.maxFrames:
             print("Clearing Plot")
             self.plotting.clearAll()
 
+        # Handle window recording mode (triggered by frame rollover)
         if vicon.lastFrameNumber > vicon.frameNumber:
-            
+            # Stop window recording if active
             if self.exporting.isRecording and self.windowRecordingMode:
                 self.windowRecordingMode = False
                 self.exporting.isRecording = False
@@ -435,71 +906,87 @@ class MainTask:
                 addToLog("Recording Stopped")
                 addToLog("Files Saved To: " + self.exporting.savePath)
 
+            # Start window recording if pending
             if self.windowRecordingMode and self.pendingWindowData:
                 self.pendingWindowData = False
                 self.exporting.isRecording = True
                 addToLog("Recording Started")
 
-
-                
-
-        
+        # Update active subject and apply filter changes
         if vicon.subjectExists():
             self.activeSubject = vicon.getSubject(vicon.subjects[0].name)
 
+            # Apply new filter configuration if requested
             if self.setFilterFlag:
                 self.setFilterFlag = False
-                self.activeSubject.kinematics.setFilter(self.filterWindow, self.filterSampleRate, self.filterType, self.filterLowCut, self.filterHighCut)
+                self.activeSubject.kinematics.setFilter(self.filterWindow, self.filterSampleRate, 
+                                                       self.filterType, self.filterLowCut, self.filterHighCut)
         else:
             self.activeSubject = None
 
-
-
-        # if not (self.plotting.Angle1 == "" or self.plotting.Angle2 == "" or self.plotting.deviceData == ['','','']):
+        # Update all subsystems with current frame data
         self.plotting.updatePlotting(vicon.frameNumber % self.maxFrames, vicon)
+        
         if self.exporting.isRecording:
             self.exporting.updateExporting(vicon.frameNumber, vicon)
+        
         if self.streaming.IsStreamingUDP:
             self.streaming.updateStream(vicon)
 
         if self.feedback.deviceFeedbackList != [] or self.feedback.angleFeedbackList != []:
             self.feedback.updateFeedback(vicon)
 
-
+        # Calculate and update FPS
         dt = time.time() - start_time
         if dt == 0:
             dt = .001
-        self.frame_count+=1
-        if(self.frame_count >=100):
+        self.frame_count += 1
+        if(self.frame_count >= 100):
             self.frame_count = 0
             self.tickFPS(dt)
 
+        # Process Qt GUI events
         app.processEvents()
 
     def tickFPS(self, dt):
+        """
+        Update FPS displays in the GUI.
+        
+        Args:
+            dt (float): Time delta for FPS calculation
+        """
         global vicon
 
         updateMainLoopFPS(int(1.0 / dt))
         updateViconStreamFPS(int(vicon.localFPS))
 
-        # print(int(vicon.localFPS), ',', int(1.0 / dt))
-
-
     def zeroSubjectAngles(self):
+        """
+        Zero all joint angles for the active subject.
+        
+        Records the current joint angles as the new zero reference.
+        Useful for calibration or relative angle measurements.
+        """
         if self.activeSubject != None:
             self.activeSubject.kinematics.recordZeroPosition()
 
 
-app = None          #Application
-Main = None         #Main Task
-ui = None           #UI elements
-ui2 = None          #UI elements
-vicon = None        #Vicon Wrapper
+# ============================================================================
+# GLOBAL APPLICATION OBJECTS
+# ============================================================================
 
-myChart = None      #OpenGL Charting
-feedbackGraph = None #Feedback Graph
+# Core application objects (initialized in setupGUI)
+app = None                  # Qt Application instance
+Main = None                 # MainTask instance (core processing loop)
+ui = None                   # Main window UI (Ui_MainWindow)
+ui2 = None                  # Feedback window UI (Ui_Form)
+vicon = None                # ViconWrapper instance (data source)
 
-#device filter parameters
+# Visualization widgets
+myChart = None              # MyCharting instance (OpenGL plot widget)
+feedbackGraph = None        # FeedbackGraph instance (visual feedback)
+
+# Device filter parameters (separate from angle filters)
 deviceFilterType = "none"
 deviceFilterWindow = 101
 deviceFilterLowCut = .01
@@ -507,24 +994,43 @@ deviceFilterHighCut = 29
 deviceFilterSampleRate = 100
 deviceSetFilterFlag = False
 
-############################ DEVICE SELECTION FUNCTIONS ############################
+# ============================================================================
+# DEVICE SELECTION FUNCTIONS
+# ============================================================================
 
 def updateViconDeviceTreeStatus(item):
+    """
+    Toggle device/channel online status when tree item is double-clicked.
+    
+    Handles both device-level and channel-level toggling:
+    - Device toggle: Enables/disables all channels
+    - Channel toggle: Enables/disables individual channel (and parent device if needed)
+    
+    Args:
+        item (QTreeWidgetItem): The tree item that was double-clicked
+    """
     global vicon, ui
 
+    # Determine if this is a channel (child) or device (parent)
     isChild = item.childCount() == 0
 
+    # Special case: Humac is treated as a device even if it has no children
     if item.text(0) == "Humac":
         isChild = False
 
     if isChild:
+        # Toggle channel status
         vicon.devices[item.parent().text(0)]["Data"][item.text(0)]["Online"] = not vicon.devices[item.parent().text(0)]["Data"][item.text(0)]["Online"]
+        
+        # If channel is now online, ensure parent device is also online
         if vicon.devices[item.parent().text(0)]["Data"][item.text(0)]["Online"]:
             vicon.devices[item.parent().text(0)]["Online"] = True
 
-
     else:
+        # Toggle device status
         vicon.devices[item.text(0)]["Online"] = not vicon.devices[item.text(0)]["Online"]
+        
+        # Update all channels to match device status
         for channel in vicon.devices[item.text(0)]["Data"]:
             vicon.devices[item.text(0)]["Data"][channel]["Online"] = vicon.devices[item.text(0)]["Online"]
 
@@ -600,7 +1106,9 @@ def buttonClickedSetDeviceData():
     Main.plotting.deviceData = [ui.comboBoxDevice.currentText(), ui.comboBoxChannel.currentText(), ui.comboBoxComponent.currentText()]
     print(Main.plotting.deviceData)   
 
-############################ ANGLE SELECTION FUNCTIONS ############################
+# ============================================================================
+# ANGLE SELECTION FUNCTIONS
+# ============================================================================
 
 def updateAngleTreeStatus(item):
     global Main, ui
@@ -664,17 +1172,43 @@ def updateLegsandMarkreDimentions():
     vicon.updateLegAndMarkerLengths(lLegMM, rLegMM, markerR)
 
 
+# ============================================================================
+# UTILITY FUNCTIONS
+# ============================================================================
+
 def addToLog(text):
+    """
+    Add a message to the application log display.
+    
+    Args:
+        text (str): Message to log
+    """
     global ui
     ui.plainTextEdit.appendPlainText(text)
 
 def updateMainLoopFPS(fps):
+    """
+    Update the main loop FPS display.
+    
+    Args:
+        fps (int): Frames per second value
+    """
     global ui
     ui.lblFPS.setText(f'FPS {fps:10.2f}')
 
 def updateViconStreamFPS(fps):
+    """
+    Update the Vicon stream FPS display.
+    
+    Args:
+        fps (int): Frames per second value
+    """
     global ui
     ui.lblViconFPS.setText(f'FPS {fps:10.2f}') 
+
+# ============================================================================
+# CHART CONTROL FUNCTIONS
+# ============================================================================
 
 def adjestChartRange():
     global Main, ui
@@ -738,7 +1272,20 @@ def setPath():
     
     ui.txtSavePath.setText(Main.exporting.savePath)
 
+# ============================================================================
+# FILTER CONFIGURATION FUNCTIONS
+# ============================================================================
+
 def setFilterType(filterType):
+    """
+    Configure the angle data filter.
+    
+    Updates the filter configuration for joint angle data and displays
+    the current filter settings in the UI.
+    
+    Args:
+        filterType (str): Type of filter ('none', 'bandpass', 'moving_average', 'moving_median')
+    """
     global Main, ui
     Main.filterType = filterType
     Main.filterWindow = ui.spinSize.value()
@@ -784,11 +1331,22 @@ def setDeviceFilterType(filterType):
 
     deviceSetFilterFlag = True
 
+# ============================================================================
+# EXPORT MANAGEMENT FUNCTIONS
+# ============================================================================
+
 def updateExportTable():
+    """
+    Refresh the export table with current device and angle selections.
+    
+    Populates the export table UI with all currently enabled devices and angles.
+    This table shows what data will be recorded when exporting starts.
+    """
     global ui, Main, vicon
 
-    Main.exporting.deviceExportList = [] #ex [device][channel]
-    Main.exporting.angleExportList = [] #ex [angle]
+    # Reset export lists
+    Main.exporting.deviceExportList = []  # Format: [device, channel]
+    Main.exporting.angleExportList = []  # Format: [angle]
 
 
     for device in vicon.devices:
@@ -918,7 +1476,17 @@ def updateSavingParameters():
 
     print(Main.exporting.filename, Main.exporting.savingIndex, Main.exporting.savingAutoIndex, Main.exporting.saveAllDeviceData)
 
+# ============================================================================
+# UDP STREAMING FUNCTIONS
+# ============================================================================
+
 def startEndStream():
+    """
+    Toggle UDP streaming on/off.
+    
+    Starts or stops UDP streaming based on current state. When starting,
+    validates and applies packet configuration from UI.
+    """
     global Main, ui
     if ui.btnStartEndStream.text() == "Start Stream":
         Main.streaming.UDPHost = ui.txtTargetMachineIP.text()
@@ -997,13 +1565,23 @@ def streamingTableSelectionChanged():
 
         ui.plainTextOrderOfPackets.appendPlainText(packet)
 
+# ============================================================================
+# FEEDBACK CONFIGURATION FUNCTIONS
+# ============================================================================
+
 def feedbackTableSelectionChanged():
+    """
+    Handle changes to feedback data selection.
+    
+    Updates the feedback system with newly selected angles or device data
+    from the feedback table.
+    """
     global ui, Main
     
     selectedItems = ui.tableFeedback.selectedItems()
     print(selectedItems)
 
-    #set values to stream
+    # Update feedback data selections
     Main.feedback.deviceFeedbackList = [] #ex [device][channel][component]
     Main.feedback.angleFeedbackList = [] #ex [Side]+[angle] LHip
     for item in selectedItems:
@@ -1016,13 +1594,24 @@ def feedbackTableSelectionChanged():
     print(Main.feedback.angleFeedbackList)
     print(Main.feedback.deviceFeedbackList)
 
+    feedbackGraph.toggleVisible(len(Main.feedback.angleFeedbackList) > 0 or len(Main.feedback.deviceFeedbackList) > 0)
+
 def feedbackRangesChanged():
     global ui, Main, feedbackGraph
 
     feedbackGraph.setTotalRange(ui.spinFeedbackMin.value(), ui.spinFeedbackMax.value())
     feedbackGraph.setRegionRange(ui.spinFeedbackRegionMin.value(), ui.spinFeedbackRegionMax.value())
 
+# ============================================================================
+# APPLICATION LIFECYCLE FUNCTIONS
+# ============================================================================
+
 def closingEvent():
+    """
+    Handle application shutdown.
+    
+    Ensures clean shutdown of Vicon stream and UDP streaming before exit.
+    """
     global vicon, Main
     print("Closing Event")
     vicon.stopStream()
@@ -1030,8 +1619,22 @@ def closingEvent():
     
 
 def setupGUI():
+    """
+    Initialize and configure the GUI and all application components.
+    
+    This function:
+    1. Creates the Qt application and windows
+    2. Initializes visualization widgets (chart, feedback)
+    3. Creates the MainTask processing loop
+    4. Configures all UI connections and event handlers
+    5. Starts the main processing timer
+    6. Launches the application event loop
+    
+    The function does not return until the application is closed.
+    """
     global myChart, Main, vicon, ui, feedbackGraph, app
 
+    # Initialize Qt application
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     app.setApplicationName("Vicon Data Viewer")
@@ -1047,10 +1650,18 @@ def setupGUI():
     ui.setupUi(MainWindow)
     MainWindow.show()
 
-    SideWindow = QWidget()
+    SideWindow = QWidget(None, Qt.WindowType.Window)
+    # Make window non-resizable, minimizable, but not closable
+    SideWindow.setWindowFlags(Qt.WindowType.Window | 
+                              Qt.WindowType.CustomizeWindowHint | 
+                              Qt.WindowType.WindowTitleHint | 
+                              Qt.WindowType.WindowMinimizeButtonHint | 
+                              Qt.WindowType.WindowMaximizeButtonHint )
     ui2 = Ui_Form()
     ui2.setupUi(SideWindow)
     SideWindow.show()
+
+    
 
 
     feedbackMax = 100
@@ -1177,28 +1788,45 @@ def setupGUI():
 
 
 
-if __name__ == "__main__":
+# ============================================================================
+# APPLICATION ENTRY POINT
+# ============================================================================
 
+if __name__ == "__main__":
+    """
+    Application entry point.
     
+    Initializes the Vicon connection and launches the GUI.
+    Configure the Vicon host address before running.
+    """
+    # Vicon system configuration
+    # Update this IP:port to match your Vicon system
     host = "141.217.165.179:801"
+    
+    # Initialize Vicon connection
     vicon = ViconWrapper(host)
     vicon.startStream()
  
+    # Launch GUI (blocks until application closes)
     setupGUI()
 
 
-
-
+# ============================================================================
+# ALTERNATIVE THREADING IMPLEMENTATION (COMMENTED OUT)
+# ============================================================================
+# The following code demonstrates an alternative approach using a separate
+# thread for Vicon streaming. This is not currently used.
+#
 # def ViconThreadingFunction():
 #     global vicon
 #     host = "141.217.165.179:801"
 #     vicon = ViconWrapper(host)
 #     vicon.startStream()
 #     vicon.startStreamLoop()
-   
+#    
 # viconThread = threading.Thread(target=ViconThreadingFunction)
 # viconThread.start()
-
+#
 # while True:
 #     try:
 #         print(vicon.localFPS)

@@ -1,0 +1,155 @@
+# Vicon Data Interface - Git Ignore File
+# Excludes temporary, cache, and system files from version control
+
+# ============================================================================
+# Python Cache and Compiled Files
+# ============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+.Python
+
+# ============================================================================
+# Virtual Environments
+# ============================================================================
+venv/
+env/
+ENV/
+.venv
+.env
+
+# ============================================================================
+# IDE and Editor Files
+# ============================================================================
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Cursor
+.cursor/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ============================================================================
+# Operating System Files
+# ============================================================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+
+# ============================================================================
+# Data Files (Exclude large data files from repository)
+# ============================================================================
+# CSV exports (too large for git)
+*.csv
+
+# Large data files
+*.dat
+*.h5
+*.hdf5
+
+# Video/image captures (optional - comment out if you want to include screenshots)
+# *.mp4
+# *.avi
+# *.mov
+# *.png
+# *.jpg
+# *.jpeg
+
+# ============================================================================
+# Qt Designer Cache
+# ============================================================================
+*.autosave
+
+# ============================================================================
+# Logs and Temporary Files
+# ============================================================================
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# ============================================================================
+# Testing and Coverage
+# ============================================================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ============================================================================
+# Documentation Build Files
+# ============================================================================
+docs/_build/
+site/
+
+# ============================================================================
+# Project-Specific Files
+# ============================================================================
+# Personal configuration files (user-specific settings)
+config.local.py
+settings.local.py
+
+# Recordings and exports from the application
+Recording*.csv
+*_angles*.csv
+*_device*.csv
+
+# Personal notes and drafts
+notes.txt
+TODO.txt
+draft*.md
+
+# Jupyter notebooks checkpoints (if used for analysis)
+.ipynb_checkpoints/
+
+# ============================================================================
+# Optional: Keep these commented unless needed
+# ============================================================================
+# If you want to exclude all PNG screenshots except specific ones:
+# *.PNG
+# !OtherFiles/Capture*.PNG
+
+# If you want to exclude Word documents:
+# *.docx
+# *.doc
+
+# If you want to exclude PDF documentation:
+# *.pdf

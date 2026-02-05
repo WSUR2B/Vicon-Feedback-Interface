@@ -1,8 +1,55 @@
+"""
+Signal Filtering Module
+
+This module provides a unified interface for applying various filters to
+biomechanical data streams in real-time applications.
+
+Supported Filter Types:
+    - none: Pass-through (no filtering)
+    - bandpass: FIR bandpass filter using Hamming window
+    - moving_average: Simple moving average filter
+    - moving_median: Moving median filter (robust to outliers)
+    - kalman: Kalman filter for state estimation (experimental)
+
+Filter Selection Guidelines:
+    - bandpass: Best for removing specific frequency noise (e.g., EMG, force)
+    - moving_average: Fast and simple, good for high-frequency noise
+    - moving_median: Best for spike removal and non-Gaussian noise
+    - kalman: Best for prediction and tracking (requires tuning)
+
+Usage Example:
+    >>> from Filters import MyFilter
+    >>> filter = MyFilter(window_size=101, samplingRate=100, 
+    ...                   filter_type='bandpass', lowcut=0.5, highcut=20)
+    >>> for data_point in data_stream:
+    ...     filtered_value = filter.filter(data_point)
+
+Note:
+    All filters maintain internal state and are designed for real-time,
+    sample-by-sample processing.
+
+Author: Daniil Grubich
+Institution: Wayne State University - R2B Lab
+"""
+
+# ============================================================================
+# IMPORTS
+# ============================================================================
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import firwin, lfilter
 
+# ============================================================================
+# FILTER CONFIGURATION
+# ============================================================================
+
+# Available filter types
 FilterTypes = ['none', 'bandpass', 'moving_average', 'moving_median', 'kalman']
+
+# ============================================================================
+# FILTER CLASS
+# ============================================================================
 
 class MyFilter:
     """

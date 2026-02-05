@@ -1,38 +1,59 @@
+"""
+ViconWrapper Module - High-Level Interface to Vicon DataStream SDK
+
+This module provides a simplified, Pythonic wrapper around the Vicon DataStream SDK
+for real-time motion capture data acquisition and processing.
+
+Purpose:
+    Abstracts the complexity of the Vicon DataStream SDK and provides an intuitive
+    interface for accessing marker positions, device data (EMG, force plates, etc.),
+    and subject kinematics from a Vicon motion capture system.
+
+Key Features:
+    - Real-time streaming of marker and device data
+    - Automatic subject and device discovery
+    - Configurable data streams (markers, devices, segments)
+    - Frame-by-frame updates with FPS tracking
+    - Support for multiple subjects and devices
+
+Module Structure:
+    - ViconWrapper: Main class for Vicon system connection and data streaming
+    - Subject: Represents a tracked subject with markers and kinematics
+    - Segment: Represents a subject body segment (when segment data is enabled)
+    - Forceplate: Represents a force plate device (not yet implemented)
+
+Usage Example:
+    >>> from ViconWrapper import ViconWrapper
+    >>> vicon = ViconWrapper("localhost:801")
+    >>> vicon.startStream()
+    >>> vicon.updateFrame()
+    >>> if vicon.subjectExists():
+    ...     subject = vicon.getSubject(vicon.subjects[0].name)
+    ...     print(subject.kinematics.anglesDictionary['LHip'])
+
+Intended Applications:
+    - Biomechanics research
+    - Real-time motion analysis
+    - Clinical gait assessment
+    - Sports performance analysis
+    - Motion capture data integration
+
+Author: Daniil Grubich
+Institution: Wayne State University - R2B Lab
+"""
+
+# ============================================================================
+# IMPORTS
+# ============================================================================
+
 from vicon_dssdk import ViconDataStream
 from ViconWrapper.Subject import Subject
 from ViconWrapper.Forceplate import Forceplate
 import time
-""" 
-ViconWrapper is a Python module that provides a wrapper around the Vicon DataStream SDK to simplify the process of
-retrieving and processing data from a Vicon motion capture system. It provides a high-level interface to the Vicon
-DataStream SDK and allows users to easily enable and disable different data streams, such as labeled markers, unlabeled
-markers, force plates, devices, and subjects. The module also provides classes to represent subjects, segments, markers,
-and force plates, making it easier to work with the data coming from the Vicon system.
 
-This module is intended to be used in research projects, motion capture applications, and other projects that require
-real-time motion capture data from a Vicon system. It provides a simple and flexible API that allows users to configure
-the data streams, retrieve the latest data from the Vicon system, and process the data in real-time.
-
-The ViconWrapper module consists of the following classes:
-
-1. ViconWrapper: A class that represents a wrapper around the Vicon DataStream SDK and provides methods to enable and
-disable different data streams, update the frame data, and retrieve data from the Vicon system.
-
-2. Subject: A class that represents a subject in the Vicon system and provides methods to update the segments, markers,
-and kinematics of the subject.
-
-3. Segment: A class that represents a segment of a subject in the Vicon system and provides methods to update the markers
-and kinematics of the segment.
-
-5. Forceplate: A class that represents a force plate in the Vicon system and provides methods to update the force and
-moment data of the force plate.                                 NOT IMPLEMENTED 
-
-The ViconWrapper module is designed to be easy to use and extensible, allowing users to customize the behavior of the
-module to suit their specific needs. It provides a high-level interface to the Vicon DataStream SDK and abstracts away
-the complexity of working with the Vicon system, making it easier to integrate motion capture data into Python
-applications.
-
-"""
+# ============================================================================
+# MAIN VICON WRAPPER CLASS
+# ============================================================================
 
 
 class ViconWrapper:
@@ -97,11 +118,16 @@ class ViconWrapper:
         self.localFPS = 0
         self.running = True
 
+    # ========================================================================
+    # CONFIGURATION METHODS
+    # ========================================================================
+    
     def configureIncomingData(self):
         """
-        Configures the incoming data for the Vicon client.
+        Configure incoming data streams based on current settings.
 
-        This method enables or disables different types of data based on the current configuration settings.
+        Disables all data types by default, then selectively enables only the
+        requested data streams. This minimizes bandwidth and processing overhead.
         """
         self.client.DisableMarkerData()
         self.client.DisableUnlabeledMarkerData()
@@ -135,11 +161,16 @@ class ViconWrapper:
         print('Devices', self.client.IsDeviceDataEnabled())
         print('Centroids', self.client.IsCentroidDataEnabled())
 
+    # ========================================================================
+    # DATA STREAM ENABLE/DISABLE METHODS
+    # ========================================================================
+    
     def enableSegmentData(self):
         """
-        Enables the streaming of segment data from the Vicon system.
+        Enable streaming of segment data from the Vicon system.
 
-        This method sets the `segmentDataOn` attribute to True and calls the `EnableSegmentData` method of the client object.
+        Segment data provides position and orientation of body segments as
+        defined in the Vicon model.
         """
         self.segmentDataOn = True
         self.client.EnableSegmentData()
@@ -257,15 +288,19 @@ class ViconWrapper:
         self.subjectDataOn = False
         self.client.DisableSubjectData()
 
+    # ========================================================================
+    # SUBJECT MANAGEMENT METHODS
+    # ========================================================================
+    
     def getSubject(self, subjectName):
         """
-        Returns the subject object with the given name.
+        Retrieve a subject by name.
 
-        Parameters:
-        subjectName (str): The name of the subject to retrieve.
+        Args:
+            subjectName (str): The name of the subject to retrieve.
 
         Returns:
-        Subject or None: The subject object with the given name, or None if not found.
+            Subject or None: The subject object, or None if not found.
         """
         return next((subject for subject in self.subjects if subject.name == subjectName), None)
 
@@ -338,14 +373,16 @@ class ViconWrapper:
 
         return len(self.subjects) > 0
 
+    # ========================================================================
+    # DATA UPDATE METHODS
+    # ========================================================================
+    
     def updateLabeledMarkers(self):
         """
-        Updates the labeled markers by retrieving the latest marker positions from the Vicon system.
+        Update labeled marker positions from the Vicon system.
 
-        This method retrieves the labeled markers from the Vicon system using the `GetLabeledMarkers` function
-        and updates the `markers` dictionary with the latest marker positions. It also removes any markers
-        that no longer exist.
-
+        Retrieves all labeled markers for the current frame and updates the
+        markers dictionary. Automatically removes markers that no longer exist.
         """
         labeledMarkers = self.client.GetLabeledMarkers()
         existingMarkerIDs = set(self.markers.keys())
@@ -449,13 +486,16 @@ class ViconWrapper:
             del self.devices[old_device_name]
 
 
+    # ========================================================================
+    # STREAMING CONTROL METHODS
+    # ========================================================================
+    
     def startStream(self):
         """
-        Starts the streaming mode for the Vicon client.
+        Start streaming mode for the Vicon client.
 
-        This method sets the stream mode of the Vicon client to EServerPush,
-        which allows the Vicon system to push data to the client.
-
+        Sets the stream mode to ServerPush, which allows the Vicon system
+        to push new frames to the client as they become available.
         """
         self.client.SetStreamMode(ViconDataStream.Client.StreamMode.EServerPush)
 
