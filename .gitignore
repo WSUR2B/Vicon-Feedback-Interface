@@ -136,6 +136,7 @@ Recording*.csv
 notes.txt
 TODO.txt
 draft*.md
+.publication-checklist.md
 
 # Jupyter notebooks checkpoints (if used for analysis)
 .ipynb_checkpoints/
