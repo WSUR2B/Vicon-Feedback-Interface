@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/LabLogo.png" alt="R2B Lab Logo" width="400">
+</p>
+
 # Vicon Data Interface
 
 **A Real-Time Motion Capture Data Processing and Visualization System for Biomechanics Research**
