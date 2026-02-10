@@ -137,23 +137,23 @@ ViconDataStreamer/
 ├── GUI/                         # Graphical user interface modules
 │   ├── MainWindow_ui.py         # Main window UI (auto-generated)
 │   ├── MainWindow.ui            # Qt Designer main window definition
-│   ├── FeedbackWindow_ui.py    # Feedback window UI (auto-generated)
-│   ├── FeedbackWindow.ui       # Qt Designer feedback window definition
-│   ├── FeedbackGraph.py        # Biofeedback visualization widget
-│   └── MyOpenGLCharting.py     # OpenGL-accelerated plotting
+│   ├── FeedbackWindow_ui.py     # Feedback window UI (auto-generated)
+│   ├── FeedbackWindow.ui        # Qt Designer feedback window definition
+│   ├── FeedbackGraph.py         # Biofeedback visualization widget
+│   └── MyOpenGLCharting.py      # OpenGL-accelerated plotting
 │
 ├── Kinematics/                  # Joint angle calculation modules
 │   ├── Calculation.py           # Geometric calculation functions
-│   └── MarkerKinematics.py     # Plug-in Gait kinematics implementation
+│   └── MarkerKinematics.py      # Plug-in Gait kinematics implementation
 │
 ├── ViconWrapper/                # Vicon DataStream SDK wrapper
-│   ├── ViconWrapper.py         # Main Vicon interface class
-│   ├── Subject.py              # Subject data representation
-│   ├── Segment.py              # Body segment representation
-│   └── Forceplate.py           # Force plate interface (experimental)
+│   ├── ViconWrapper.py          # Main Vicon interface class
+│   ├── Subject.py               # Subject data representation
+│   ├── Segment.py               # Body segment representation
+│   └── Forceplate.py            # Force plate interface (experimental)
 │
 └── OtherFiles/                  # Documentation and media
-    └── Capture*.PNG            # Application screenshots
+    └── Capture*.PNG             # Application screenshots
 ```
 
 ---
