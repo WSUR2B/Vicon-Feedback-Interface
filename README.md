@@ -46,7 +46,6 @@ The **Vicon Data Interface** is a comprehensive software application designed to
 - [Calculated Angles](#calculated-angles)
 - [Data Export Formats](#data-export-formats)
 - [Troubleshooting](#troubleshooting)
-- [Citation](#citation)
 - [Authors](#authors)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
