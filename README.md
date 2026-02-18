@@ -162,16 +162,23 @@ ViconDataStreamer/
 
 ### Before Launching the Application
 
-#### 1. Vicon System Setup
+#### 1. Vicon System Setup (see Vicon video resources for additional detials https://www.yout-ube.com/watch?v=ooesFPKgN6Q)
 
 1. **Launch Vicon Nexus** on the Vicon PC
-2. **Create and calibrate a subject** in Nexus
-3. **Label all markers** according to the Plug-in Gait marker set:
+2. **Create the subject and attach the labeling template** then measure and add required dimensions 
+3. **Collect a static pose**
+4. **Reconstruct the data in the static pose** 
+5. **Label all markers** according to the Plug-in Gait marker set (note marker names must match the following):
    - Pelvis: `LASI`, `RASI`, `LPSI`, `RPSI`
    - Lower extremity: `LKNE`, `RKNE`, `LANK`, `RANK`
    - Foot: `LHEE`, `RHEE`, `LTOE`, `RTOE`
-4. **Start live mode** in Nexus
-5. **Enable DataStream** (Tools → Enable DataStream SDK)
+6. **Scale the subject** using the scale subject VSK
+7. **Calibrate the subject** using the marker only subject calibration
+8. **Process static plug-in gait model**
+9. **Start live mode** in Nexus
+10. **Enable DataStream** (Tools → Enable DataStream SDK)
+
+**Note** steps 5-7 can be completed automatically using the Auto Initialize Labeling Pipeline 
 
 #### 2. Network Configuration
 
