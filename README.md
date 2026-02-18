@@ -20,7 +20,7 @@ The **Vicon Data Interface** is a comprehensive software application designed to
 
 - **Real-Time Joint Angle Calculation**: Computes lower extremity joint angles using Plug-in Gait marker set
 - **Multi-Device Integration**: Simultaneously monitors markers, EMG, force plates, and custom devices
-- **Advanced Signal Processing**: Configurable filters (bandpass, moving average, moving median, Kalman)
+- **Advanced Signal Processing**: Configurable filters (bandpass, moving average, moving median)
 - **UDP Network Streaming**: Broadcast data to external applications for integration with other systems
 - **Visual Biofeedback**: Real-time feedback display for rehabilitation and training applications
 - **Flexible Data Export**: Multiple recording modes with CSV output for post-processing
@@ -113,7 +113,7 @@ The **Vicon Data Interface** is a comprehensive software application designed to
   - GPU: OpenGL 3.0+ with hardware acceleration
 
 ### Software
-- **Operating System:** Windows 10/11, Linux (Ubuntu 20.04+), macOS 10.15+
+- **Operating System:** Windows 10/11
 - **Python:** 3.8, 3.9, 3.10, or 3.11
 - **Vicon Nexus:** 2.12 or higher (running on Vicon PC)
 
@@ -162,25 +162,31 @@ ViconDataStreamer/
 
 ### Before Launching the Application
 
-#### 1. Vicon System Setup
+#### 1. Vicon System Setup (see Vicon video resources for additional detials https://www.yout-ube.com/watch?v=ooesFPKgN6Q)
 
 1. **Launch Vicon Nexus** on the Vicon PC
-2. **Create and calibrate a subject** in Nexus
-3. **Label all markers** according to the Plug-in Gait marker set:
+2. **Create the subject and attach the labeling template** then measure and add required dimensions 
+3. **Collect a static pose**
+4. **Reconstruct the data in the static pose** 
+5. **Label all markers** according to the Plug-in Gait marker set (note marker names must match the following):
    - Pelvis: `LASI`, `RASI`, `LPSI`, `RPSI`
    - Lower extremity: `LKNE`, `RKNE`, `LANK`, `RANK`
    - Foot: `LHEE`, `RHEE`, `LTOE`, `RTOE`
-4. **Start live mode** in Nexus
-5. **Enable DataStream** (Tools → Enable DataStream SDK)
+6. **Scale the subject** using the scale subject VSK
+7. **Calibrate the subject** using the marker only subject calibration
+8. **Process static plug-in gait model**
+9. **Start live mode** in Nexus
+10. **Enable DataStream** (Tools → Enable DataStream SDK)
+
+**Note** steps 5-7 can be completed automatically using the Auto Initialize Labeling Pipeline 
 
 #### 2. Network Configuration
 
 1. Ensure both PCs are on the same network
-2. Note the Vicon PC's IP address (visible in Nexus system settings)
+2. Note the Vicon PC's IP address (visible in Nexus system settings or using ipconfig command)
 3. Configure firewall to allow traffic on port 801
-4. Test connectivity using `ping <vicon-ip>`
 
-#### 3. Application Configuration
+#### 3. Application Configuration 
 
 Edit the configuration in `main.py`:
 
@@ -189,30 +195,29 @@ Edit the configuration in `main.py`:
 host = "192.168.1.100:801"  # Update with your Vicon IP
 
 # Subject anthropometric measurements (in millimeters)
-vicon.subjectLLegMM = 800   # Left leg length
-vicon.subjectRLegMM = 800   # Right leg length
-vicon.subjectMarkerRMM = 7  # Marker radius
+vicon.subjectLLegMM = 800   # Default Left leg length 
+vicon.subjectRLegMM = 800   # Default Right leg length
+vicon.subjectMarkerRMM = 7  # Default Marker radius
 ```
 
 ### Optimizing Performance
 
 - **Select only required data streams** to minimize processing overhead
 - **Disable unused devices** in the device selection tree
-- **Adjust plot window size** based on your monitor refresh rate
 - **Use appropriate filter window sizes** (larger = more smoothing, more delay)
 
 ---
 
 ## Usage
 
-### Quick Start
+### Quick Start (Vicon is Live and Subject exist)
 
 1. **Launch the application:**
    ```bash
    python main.py
    ```
 
-2. **Wait for connection:** The application will automatically connect to the Vicon system and display "Connected" in the status bar.
+2. **Wait for connection:** The application will automatically connect to the Vicon system if Subject exists.
 
 3. **Select data streams:**
    - Navigate to the **Device Selection** tab
@@ -229,7 +234,6 @@ vicon.subjectMarkerRMM = 7  # Marker radius
 
 5. **Record data:**
    - Go to the **Exporting** tab
-   - Choose recording mode (Manual/Duration/Window)
    - Set file path and name
    - Click "Start Recording" or "Record Duration"
 
@@ -244,14 +248,14 @@ vicon.subjectMarkerRMM = 7  # Marker radius
    - **Moving Average**: Smooth high-frequency noise
    - **Moving Median**: Remove spikes and outliers
 3. Configure filter parameters
-4. Filter is applied immediately to all calculations
+4. Filter is applied immediately to all angle calculations
 
 #### UDP Streaming
 
 1. Go to **Streaming** tab
 2. Enter target IP address and port
 3. Configure packet format:
-   - **Packet Size**: Total packet length (bytes)
+   - **Packet Size**: Total packet character length 
    - **Value Size**: Space allocated for numerical value
 4. Select data to stream from the table
 5. Click "Start Stream"
@@ -270,6 +274,7 @@ Example: "LHip          45.67     $"
 4. Configure feedback ranges:
    - **Total Range**: Full display range
    - **Target Region**: Desired performance zone
+   - **Option to Negate the Feedback Signal**
 5. Monitor in real-time on feedback window
 
 ---
@@ -278,7 +283,6 @@ Example: "LHip          45.67     $"
 
 ### Data Acquisition
 
-- **Marker Tracking**: Real-time 3D positions of all labeled markers
 - **Device Integration**: EMG, force plates, accelerometers, custom analog devices
 - **Multi-Rate Sampling**: Handles devices with different sampling rates
 - **Frame Synchronization**: Automatic synchronization of all data sources
@@ -295,7 +299,7 @@ Example: "LHip          45.67     $"
 - **Bandpass Filter**: FIR filter with configurable cutoff frequencies
 - **Moving Average**: Simple temporal averaging (configurable window)
 - **Moving Median**: Robust outlier rejection (configurable window)
-- **Kalman Filter**: State estimation for prediction (experimental)
+- **Kalman Filter**: State estimation for prediction (experimental, not tested)
 
 ### Visualization
 
@@ -312,7 +316,7 @@ Three recording modes:
 2. **Duration Mode**: Automatically record for specified time
 3. **Window Mode**: Save current plot window contents
 
-**Export Formats:**
+**Export Format:**
 - CSV files with timestamps
 - Separate files for angles and each device
 - Configurable filename and auto-incrementing
@@ -321,7 +325,6 @@ Three recording modes:
 
 - **Low Latency**: Real-time data broadcast over network
 - **Custom Packet Format**: Configurable size and structure
-- **Multi-Client**: Broadcast to multiple applications
 - **Selective Streaming**: Choose which data to transmit
 
 ---
@@ -525,7 +528,6 @@ For questions, issues, or suggestions:
 
 - **Email:** daniil.grubich@wayne.edu
 - **Issues:** Open an issue on the GitHub repository
-- **Documentation:** See `OtherFiles/` folder for additional guides
 
 ---
 

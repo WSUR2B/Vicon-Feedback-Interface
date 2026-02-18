@@ -730,6 +730,7 @@ class Feedback:
         """
         self.feedbackGraph = feedbackGraph
         self.currentValue = 0
+        self.negated = False
 
         # Data selections for feedback (should be mutually exclusive)
         self.deviceFeedbackList = []  # Format: [device, channel, component]
@@ -786,6 +787,8 @@ class Feedback:
         Args:
             value (float): New value to display
         """
+        if self.negated:
+            value = -value
         self.currentValue = value
         self.feedbackGraph.setCurrentValue(self.currentValue)
 
@@ -1602,6 +1605,10 @@ def feedbackRangesChanged():
     feedbackGraph.setTotalRange(ui.spinFeedbackMin.value(), ui.spinFeedbackMax.value())
     feedbackGraph.setRegionRange(ui.spinFeedbackRegionMin.value(), ui.spinFeedbackRegionMax.value())
 
+def feedbackNegateChanged():
+    global ui, Main, feedbackGraph
+    Main.feedback.negated = ui.btnPushReverseFeedbackSignal.isChecked()
+    print(Main.feedback.negated)
 # ============================================================================
 # APPLICATION LIFECYCLE FUNCTIONS
 # ============================================================================
@@ -1772,7 +1779,7 @@ def setupGUI():
     ui.spinFeedbackMin.valueChanged.connect(lambda: feedbackRangesChanged())
 
     ui.tableFeedback.itemSelectionChanged.connect(lambda: feedbackTableSelectionChanged())
-
+    ui.btnPushReverseFeedbackSignal.clicked.connect(lambda: feedbackNegateChanged())
 
     #add closing event
     app.aboutToQuit.connect(lambda: closingEvent())
