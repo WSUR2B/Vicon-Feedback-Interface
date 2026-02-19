@@ -117,7 +117,7 @@ The **Vicon Data Interface** is a comprehensive software application designed to
 ## Project Structure
 
 ```
-ViconDataStreamer/
+ViconDataInterface/
 ├── main.py                      # Main application entry point
 ├── Filters.py                   # Signal filtering implementations
 ├── feedbackTest.py              # Feedback system testing utilities
