@@ -57,10 +57,6 @@ The **Vicon Data Interface** is a comprehensive software application designed to
 ### Prerequisites
 
 1. **Python 3.8 or higher**
-   ```bash
-   python --version  # Verify Python installation
-   ```
-
 2. **Vicon DataStream SDK**
    - Download and install from [Vicon's website](https://www.vicon.com/software/datastream-sdk/)
    - Ensure the SDK is accessible to Python
@@ -68,11 +64,6 @@ The **Vicon Data Interface** is a comprehensive software application designed to
 ### Install Dependencies
 
 1. Clone or download this repository:
-   ```bash
-   git clone <repository-url>
-   cd ViconDataStreamer
-   ```
-
 2. Install required Python packages:
    ```bash
    pip install -r requirements.txt
@@ -88,7 +79,7 @@ The **Vicon Data Interface** is a comprehensive software application designed to
    - `PyOpenGL` (Hardware-accelerated graphics)
 
 3. Configure Vicon connection:
-   - Edit `main.py` (line ~1793)
+   - Edit `main.py` (line ~1811)
    - Update the host IP address to match your Vicon system:
      ```python
      host = "YOUR_VICON_IP:801"  # e.g., "192.168.1.100:801"
@@ -161,7 +152,7 @@ ViconDataStreamer/
 
 ### Before Launching the Application
 
-#### 1. Vicon System Setup (see Vicon video resources for additional detials https://www.yout-ube.com/watch?v=ooesFPKgN6Q)
+#### 1. Vicon System Setup (see Vicon video resources for additional details https://www.yout-ube.com/watch?v=ooesFPKgN6Q)
 
 1. **Launch Vicon Nexus** on the Vicon PC
 2. **Create the subject and attach the labeling template** then measure and add required dimensions 
@@ -187,7 +178,7 @@ ViconDataStreamer/
 
 #### 3. Application Configuration 
 
-Edit the configuration in `main.py`:
+Edit the configuration in `main.py` (Subject measurements can be changed in Runtime):
 
 ```python
 # Vicon system IP address and port
@@ -330,7 +321,7 @@ Three recording modes:
 
 ## Calculated Angles
 
-### Sagittal Plane (Flexion/Extension)
+### Sagittal Plane (Flexion/Extension) (VALIDATED)
 
 | Angle | Description | Positive Direction |
 |-------|-------------|-------------------|
@@ -338,13 +329,13 @@ Three recording modes:
 | **Knee** | Knee flexion/extension | Flexion |
 | **Ankle** | Ankle dorsi/plantarflexion | Dorsiflexion |
 
-### Frontal Plane (Abduction/Adduction)
+### Frontal Plane (Abduction/Adduction) (NOT VALIDATED)
 
 | Angle | Description | Positive Direction |
 |-------|-------------|-------------------|
 | **Hip Adduction** | Hip ad/abduction | Adduction (toward midline) |
 
-### Transverse Plane (Rotation)
+### Transverse Plane (Rotation) (NOT VALIDATED)
 
 | Angle | Description | Positive Direction |
 |-------|-------------|-------------------|
