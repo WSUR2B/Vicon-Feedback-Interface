@@ -948,8 +948,9 @@ class MainTask:
             self.frame_count = 0
             self.tickFPS(dt)
 
-        # Process Qt GUI events
-        app.processEvents()
+
+        # Schedule next frame AFTER Qt processes all pending events (QTimer internally calls app.processEvents())
+        QTimer.singleShot(0, self.runFrame)
 
     def tickFPS(self, dt):
         """
@@ -1784,12 +1785,8 @@ def setupGUI():
     #add closing event
     app.aboutToQuit.connect(lambda: closingEvent())
 
-    timer = QTimer(MainWindow)
-    timer.timeout.connect(Main.runFrame)
-    timer.start(1)  # ~60 frames per second
 
-
-
+    QTimer.singleShot(0, Main.runFrame)
     sys.exit(app.exec())
 
 

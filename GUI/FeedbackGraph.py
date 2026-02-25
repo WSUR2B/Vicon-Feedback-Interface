@@ -54,6 +54,7 @@ class FeedbackGraph():
 
         # Create the plot widget
         self.plotWidget = pg.PlotWidget()
+        self.plotWidget.useOpenGL(True)
         self.plotWidget.hideAxis('bottom')  # Hide X-axis (not used)
         self.plotWidget.hideAxis('left')  # Hide Y-axis (not used)
 
@@ -115,7 +116,6 @@ class FeedbackGraph():
         self.plotWidget.addItem(self.bar)
         #rescale the plot so that the total range is visible
         self.plotWidget.setYRange(self.minVal, self.maxVal)
-        self.plotWidget.repaint()
         self.plotWidget.update()
 
     def setRegionRange(self, regionMin, regionMax):
@@ -135,7 +135,6 @@ class FeedbackGraph():
                                         height=[self.regionMax - self.regionMin], brush='g')
         
         self.plotWidget.addItem(self.regionBar)
-        self.plotWidget.repaint()
         self.plotWidget.update()
 
     def setCurrentValue(self, currentVal):
@@ -147,7 +146,6 @@ class FeedbackGraph():
         """
         self.currentVal = currentVal
         self.horizontalLine.setPos(self.currentVal) 
-        self.plotWidget.repaint()
         self.plotWidget.update()
 
     def toggleVisible(self, visible):
@@ -158,7 +156,6 @@ class FeedbackGraph():
             visible (bool): New visibility state
         """
         self.plotWidget.setVisible(visible)
-        self.plotWidget.repaint()
         self.plotWidget.update()
 
 
