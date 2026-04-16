@@ -1172,8 +1172,12 @@ def updateLegsandMarkreDimentions():
     global vicon, ui
     lLegMM = ui.spinLeftLeg.value()
     rLegMM = ui.spinRightLeg.value()
+    lKneeWidth = ui.spinLeftKneeWidth.value()
+    rKneeWidth = ui.spinRightKneeWidth.value()
+    lAnkleWidth = ui.spinLeftAnkleWidth.value()
+    rAnkleWidth = ui.spinRightAnkleWidth.value()
     markerR = ui.spinMarkerR.value()
-    vicon.updateLegAndMarkerLengths(lLegMM, rLegMM, markerR)
+    vicon.updateMeasurmentsAndMarkerRadius(lLegMM, rLegMM, lKneeWidth, rKneeWidth, lAnkleWidth, rAnkleWidth, markerR)
 
 
 # ============================================================================
@@ -1772,6 +1776,10 @@ def setupGUI():
 
     ui.spinLeftLeg.valueChanged.connect(lambda: updateLegsandMarkreDimentions())
     ui.spinRightLeg.valueChanged.connect(lambda: updateLegsandMarkreDimentions())
+    ui.spinRightKneeWidth.valueChanged.connect(lambda: updateLegsandMarkreDimentions())
+    ui.spinLeftKneeWidth.valueChanged.connect(lambda: updateLegsandMarkreDimentions())
+    ui.spinLeftAnkleWidth.valueChanged.connect(lambda: updateLegsandMarkreDimentions())
+    ui.spinRightAnkleWidth.valueChanged.connect(lambda: updateLegsandMarkreDimentions())
     ui.spinMarkerR.valueChanged.connect(lambda: updateLegsandMarkreDimentions())
 
     ui.spinFeedbackMax.valueChanged.connect(lambda: feedbackRangesChanged())
@@ -1805,7 +1813,7 @@ if __name__ == "__main__":
     """
     # Vicon system configuration
     # Update this IP:port to match your Vicon system
-    host = "141.217.165.179:801"
+    host = "141.217.166.239:801"
     
     # Initialize Vicon connection
     vicon = ViconWrapper(host)

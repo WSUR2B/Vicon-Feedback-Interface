@@ -44,10 +44,10 @@
            </sizepolicy>
           </property>
           <property name="frameShape">
-           <enum>QFrame::Shape::StyledPanel</enum>
+           <enum>QFrame::StyledPanel</enum>
           </property>
           <property name="frameShadow">
-           <enum>QFrame::Shadow::Raised</enum>
+           <enum>QFrame::Raised</enum>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
            <property name="leftMargin">
@@ -70,7 +70,7 @@
              <item>
               <spacer name="horizontalSpacer_2">
                <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
+                <enum>Qt::Horizontal</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
@@ -86,7 +86,7 @@
                 <string>Vicon  </string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -96,7 +96,7 @@
                 <string>lblFPS</string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -106,20 +106,20 @@
                 <string>  Main </string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QLabel" name="lblFPS">
                <property name="layoutDirection">
-                <enum>Qt::LayoutDirection::LeftToRight</enum>
+                <enum>Qt::LeftToRight</enum>
                </property>
                <property name="text">
                 <string>lblFPS</string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -207,17 +207,17 @@
       <item row="0" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <property name="sizeConstraint">
-         <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+         <enum>QLayout::SetMinimumSize</enum>
         </property>
        </layout>
       </item>
       <item row="0" column="3" rowspan="3">
        <widget class="QFrame" name="frame">
         <property name="frameShape">
-         <enum>QFrame::Shape::StyledPanel</enum>
+         <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="frameShadow">
-         <enum>QFrame::Shadow::Raised</enum>
+         <enum>QFrame::Raised</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
          <property name="leftMargin">
@@ -244,7 +244,7 @@
             </sizepolicy>
            </property>
            <property name="currentIndex">
-            <number>5</number>
+            <number>2</number>
            </property>
            <widget class="QWidget" name="tab_2">
             <property name="sizePolicy">
@@ -456,9 +456,97 @@
                 </layout>
                </item>
                <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_21">
+                 <item>
+                  <widget class="QLabel" name="label_26">
+                   <property name="text">
+                    <string>Left Knee W (mm):</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="spinLeftKneeWidth">
+                   <property name="minimum">
+                    <number>0</number>
+                   </property>
+                   <property name="maximum">
+                    <number>9999</number>
+                   </property>
+                   <property name="value">
+                    <number>100</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_31">
+                   <property name="text">
+                    <string>Right Knee W (mm):</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="spinRightKneeWidth">
+                   <property name="minimum">
+                    <number>100</number>
+                   </property>
+                   <property name="maximum">
+                    <number>9999</number>
+                   </property>
+                   <property name="value">
+                    <number>100</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_24">
+                 <item>
+                  <widget class="QLabel" name="label_36">
+                   <property name="text">
+                    <string>Left Ankle W (mm):</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="spinLeftAnkleWidth">
+                   <property name="minimum">
+                    <number>0</number>
+                   </property>
+                   <property name="maximum">
+                    <number>9999</number>
+                   </property>
+                   <property name="value">
+                    <number>80</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_37">
+                   <property name="text">
+                    <string>Right Ankle W (mm):</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="spinRightAnkleWidth">
+                   <property name="minimum">
+                    <number>0</number>
+                   </property>
+                   <property name="maximum">
+                    <number>9999</number>
+                   </property>
+                   <property name="value">
+                    <number>80</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
                 <widget class="Line" name="line">
                  <property name="orientation">
-                  <enum>Qt::Orientation::Horizontal</enum>
+                  <enum>Qt::Horizontal</enum>
                  </property>
                 </widget>
                </item>
@@ -601,18 +689,18 @@
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_4">
                  <property name="sizeConstraint">
-                  <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+                  <enum>QLayout::SetMinimumSize</enum>
                  </property>
                  <item>
                   <widget class="QLabel" name="label">
                    <property name="layoutDirection">
-                    <enum>Qt::LayoutDirection::LeftToRight</enum>
+                    <enum>Qt::LeftToRight</enum>
                    </property>
                    <property name="text">
                     <string>Angle 1:</string>
                    </property>
                    <property name="alignment">
-                    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -648,18 +736,18 @@
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_10">
                  <property name="sizeConstraint">
-                  <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+                  <enum>QLayout::SetMinimumSize</enum>
                  </property>
                  <item>
                   <widget class="QLabel" name="label_14">
                    <property name="layoutDirection">
-                    <enum>Qt::LayoutDirection::LeftToRight</enum>
+                    <enum>Qt::LeftToRight</enum>
                    </property>
                    <property name="text">
                     <string>Angle 2:</string>
                    </property>
                    <property name="alignment">
-                    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -696,13 +784,13 @@
                <item>
                 <widget class="QLabel" name="label_7">
                  <property name="layoutDirection">
-                  <enum>Qt::LayoutDirection::LeftToRight</enum>
+                  <enum>Qt::LeftToRight</enum>
                  </property>
                  <property name="text">
                   <string>Plot Device Data</string>
                  </property>
                  <property name="alignment">
-                  <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                  </property>
                 </widget>
                </item>
@@ -727,7 +815,7 @@
              <item>
               <spacer name="verticalSpacer">
                <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
+                <enum>Qt::Vertical</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
@@ -813,7 +901,7 @@
                 <string>Data To Export</string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignCenter</set>
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -834,7 +922,7 @@
              <item>
               <spacer name="verticalSpacer_3">
                <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
+                <enum>Qt::Vertical</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
@@ -854,7 +942,7 @@
                     <string>Duration(s):</string>
                    </property>
                    <property name="alignment">
-                    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -975,7 +1063,7 @@
                 <string>Select Data To Stream</string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignCenter</set>
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -988,7 +1076,7 @@
                 <string>Order of Packets</string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignCenter</set>
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -1004,7 +1092,7 @@
              <item>
               <spacer name="verticalSpacer_4">
                <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
+                <enum>Qt::Vertical</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
@@ -1037,10 +1125,10 @@
                 </sizepolicy>
                </property>
                <property name="frameShape">
-                <enum>QFrame::Shape::StyledPanel</enum>
+                <enum>QFrame::StyledPanel</enum>
                </property>
                <property name="frameShadow">
-                <enum>QFrame::Shadow::Raised</enum>
+                <enum>QFrame::Raised</enum>
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_36">
                 <item>
@@ -1054,13 +1142,13 @@
                      </sizepolicy>
                     </property>
                     <property name="layoutDirection">
-                     <enum>Qt::LayoutDirection::LeftToRight</enum>
+                     <enum>Qt::LeftToRight</enum>
                     </property>
                     <property name="text">
                      <string>Feedback Range</string>
                     </property>
                     <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignCenter</set>
+                     <set>Qt::AlignCenter</set>
                     </property>
                    </widget>
                   </item>
@@ -1072,7 +1160,7 @@
                        <string>Maximum</string>
                       </property>
                       <property name="alignment">
-                       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                       </property>
                      </widget>
                     </item>
@@ -1096,7 +1184,7 @@
                        <string>Minimum</string>
                       </property>
                       <property name="alignment">
-                       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                       </property>
                      </widget>
                     </item>
@@ -1125,13 +1213,13 @@
                      </sizepolicy>
                     </property>
                     <property name="layoutDirection">
-                     <enum>Qt::LayoutDirection::LeftToRight</enum>
+                     <enum>Qt::LeftToRight</enum>
                     </property>
                     <property name="text">
                      <string>Region Range</string>
                     </property>
                     <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignCenter</set>
+                     <set>Qt::AlignCenter</set>
                     </property>
                    </widget>
                   </item>
@@ -1143,7 +1231,7 @@
                        <string>Maximum</string>
                       </property>
                       <property name="alignment">
-                       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                       </property>
                      </widget>
                     </item>
@@ -1167,7 +1255,7 @@
                        <string>Minimum</string>
                       </property>
                       <property name="alignment">
-                       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                       </property>
                      </widget>
                     </item>
@@ -1210,7 +1298,7 @@
                 <string>Select Data For Feedback</string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignCenter</set>
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -1236,7 +1324,7 @@
         <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
+           <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -1322,7 +1410,7 @@
            <number>10000</number>
           </property>
           <property name="orientation">
-           <enum>Qt::Orientation::Vertical</enum>
+           <enum>Qt::Vertical</enum>
           </property>
          </widget>
         </item>
@@ -1344,10 +1432,10 @@
            <number>10000</number>
           </property>
           <property name="orientation">
-           <enum>Qt::Orientation::Vertical</enum>
+           <enum>Qt::Vertical</enum>
           </property>
           <property name="tickPosition">
-           <enum>QSlider::TickPosition::NoTicks</enum>
+           <enum>QSlider::NoTicks</enum>
           </property>
          </widget>
         </item>
@@ -1400,7 +1488,7 @@
      <x>0</x>
      <y>0</y>
      <width>1173</width>
-     <height>33</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

@@ -57,7 +57,7 @@ import time
 
 
 class ViconWrapper:
-    def __init__(self, host):
+    def __init__(self, host = "localhost:801"):
         """
         Initializes a ViconWrapper object.
 
@@ -112,6 +112,10 @@ class ViconWrapper:
 
         self.subjectLLegMM = 800
         self.subjectRLegMM = 800
+        self.subjectLKneeWidth = 100
+        self.subjectRKneeWidth = 100
+        self.subjectLAnkleWidth = 80
+        self.subjectRAnkleWidth = 80
         self.subjectMarkerRMM = 7
 
         self.viconFPS = 100
@@ -325,7 +329,7 @@ class ViconWrapper:
         # Add new subjects
         for subjectName in newSubjects:
             print(f"New subject found: {subjectName}")
-            subject = Subject(subjectName, self.subjectLLegMM, self.subjectRLegMM, self.subjectMarkerRMM)
+            subject = Subject(subjectName, self.subjectLLegMM, self.subjectRLegMM, self.subjectLKneeWidth, self.subjectRKneeWidth, self.subjectLAnkleWidth, self.subjectRAnkleWidth, self.subjectMarkerRMM)
             self.subjects.append(subject)
 
         # Remove subjects no longer present
@@ -339,7 +343,7 @@ class ViconWrapper:
             subject.updateMarkers(self.client)
             subject.updateKinematics()
 
-    def updateLegAndMarkerLengths(self, lLegMM, rLegMM, markerRMM):
+    def updateMeasurmentsAndMarkerRadius(self, lLegMM, rLegMM, lKneeWidth, rKneeWidth, lAnkleWidth, rAnkleWidth, markerRMM):
         """
         Updates the lengths of the legs and markers for all subjects.
 
@@ -349,16 +353,24 @@ class ViconWrapper:
         Args:
         lLegMM (int): The length of the left leg in millimeters.
         rLegMM (int): The length of the right leg in millimeters.
+        lKneeWidth (int): The width of the left knee in millimeters.
+        rKneeWidth (int): The width of the right knee in millimeters.
+        lAnkleWidth (int): The width of the left ankle in millimeters.
+        rAnkleWidth (int): The width of the right ankle in millimeters.
         markerRMM (int): The radius of the subject marker in millimeters.
 
         """
 
         self.subjectLLegMM = lLegMM
         self.subjectRLegMM = rLegMM
+        self.subjectLKneeWidth = lKneeWidth
+        self.subjectRKneeWidth = rKneeWidth
+        self.subjectLAnkleWidth = lAnkleWidth
+        self.subjectRAnkleWidth = rAnkleWidth
         self.subjectMarkerRMM = markerRMM
 
         for subject in self.subjects:
-            subject.updateLegAndMarkerLengths(lLegMM, rLegMM, markerRMM)
+            subject.updateMeasurmentsAndMarkerRadius(lLegMM, rLegMM, lKneeWidth, rKneeWidth, lAnkleWidth, rAnkleWidth, markerRMM)
 
     def subjectExists(self):
         """

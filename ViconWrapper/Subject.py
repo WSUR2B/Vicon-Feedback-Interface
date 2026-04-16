@@ -21,14 +21,14 @@ Institution: Wayne State University - R2B Lab
 # ============================================================================
 
 from ViconWrapper.Segment import Segment
-from Kinematics.MarkerKinematics import MarkerKinematicsPlugInSetQ0
+from Kinematics.MarkerKinematics import MarkerKinematicsPlugInSetQ1
 
 # ============================================================================
 # SUBJECT CLASS
 # ============================================================================
 
 class Subject:
-    def __init__(self, name, LLegMM, RLegMM, MarkerRMM):
+    def __init__(self, name, LLegMM, RLegMM, LKneeWidth, RKneeWidth, LAnkleWidth, RAnkleWidth, MarkerRMM):
         """
         Initializes a Subject object.
 
@@ -36,11 +36,15 @@ class Subject:
             name (str): The name of the subject.
             LLegMM (float): Length of the left leg in millimeters.
             RLegMM (float): Length of the right leg in millimeters.
+            LKneeWidth (float): Width of the left knee in millimeters.
+            RKneeWidth (float): Width of the right knee in millimeters.
+            LAnkleWidth (float): Width of the left ankle in millimeters.
+            RAnkleWidth (float): Width of the right ankle in millimeters.
             MarkerRMM (float): Marker radius in millimeters.
 
         Attributes:
             name (str): The name of the subject.
-            kinematics (MarkerKinematicsPlugInSetQ0): The kinematics plugin set with initial values.
+            kinematics (MarkerKinematicsPlugInSetQ1): The kinematics plugin set with initial values.
             segments (list): List of segments.
             markers (dict): Dictionary of markers.
 
@@ -54,22 +58,30 @@ class Subject:
         """
 
         self.name = name
-        self.kinematics = MarkerKinematicsPlugInSetQ0(LLegMM, RLegMM, MarkerRMM)
+        self.kinematics = MarkerKinematicsPlugInSetQ1(LLegMM, RLegMM, LKneeWidth, RKneeWidth, LAnkleWidth, RAnkleWidth, MarkerRMM)
         self.segments = []
         self.markers = {}
     
-    def updateLegAndMarkerLengths(self, LLegMM, RLegMM, MarkerRMM):
+    def updateMeasurmentsAndMarkerRadius(self, LLegMM, RLegMM,LKneeWidth, RKneeWidth, LAnkleWidth, RAnkleWidth, MarkerRMM):
         """
         Updates the lengths of the legs and the marker radius.
 
         Args:
             LLegMM (float): Length of the left leg in millimeters.
             RLegMM (float): Length of the right leg in millimeters.
+            LKneeWidth (float): Width of the left knee in millimeters.
+            RKneeWidth (float): Width of the right knee in millimeters.
+            LAnkleWidth (float): Width of the left ankle in millimeters.
+            RAnkleWidth (float): Width of the right ankle in millimeters.
             MarkerRMM (float): Marker radius in millimeters.
 
         """
         self.kinematics.LegLengthL = LLegMM
         self.kinematics.LegLengthR = RLegMM
+        self.kinematics.LKneeWidth = LKneeWidth
+        self.kinematics.RKneeWidth = RKneeWidth
+        self.kinematics.LAnkleWidth = LAnkleWidth
+        self.kinematics.RAnkleWidth = RAnkleWidth
         self.kinematics.markerRadius = MarkerRMM
         
     

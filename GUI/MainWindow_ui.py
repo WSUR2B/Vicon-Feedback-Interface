@@ -54,8 +54,8 @@ class Ui_MainWindow(object):
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
         self.frame_2.setSizePolicy(sizePolicy1)
-        self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
+        self.frame_2.setFrameShape(QFrame.StyledPanel)
+        self.frame_2.setFrameShadow(QFrame.Raised)
         self.gridLayout_5 = QGridLayout(self.frame_2)
         self.gridLayout_5.setSpacing(0)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
@@ -68,26 +68,26 @@ class Ui_MainWindow(object):
 
         self.label_23 = QLabel(self.frame_2)
         self.label_23.setObjectName(u"label_23")
-        self.label_23.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_23.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.horizontalLayout_20.addWidget(self.label_23)
 
         self.lblViconFPS = QLabel(self.frame_2)
         self.lblViconFPS.setObjectName(u"lblViconFPS")
-        self.lblViconFPS.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        self.lblViconFPS.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_20.addWidget(self.lblViconFPS)
 
         self.label_22 = QLabel(self.frame_2)
         self.label_22.setObjectName(u"label_22")
-        self.label_22.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_22.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.horizontalLayout_20.addWidget(self.label_22)
 
         self.lblFPS = QLabel(self.frame_2)
         self.lblFPS.setObjectName(u"lblFPS")
-        self.lblFPS.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.lblFPS.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        self.lblFPS.setLayoutDirection(Qt.LeftToRight)
+        self.lblFPS.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_20.addWidget(self.lblFPS)
 
@@ -155,14 +155,14 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self.horizontalLayout.setSizeConstraint(QLayout.SetMinimumSize)
 
         self.gridLayout.addLayout(self.horizontalLayout, 0, 1, 1, 1)
 
         self.frame = QFrame(self.centralwidget)
         self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Shadow.Raised)
+        self.frame.setFrameShape(QFrame.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Raised)
         self.gridLayout_2 = QGridLayout(self.frame)
         self.gridLayout_2.setSpacing(0)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
@@ -329,6 +329,68 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_8.addLayout(self.horizontalLayout_5)
 
+        self.horizontalLayout_21 = QHBoxLayout()
+        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
+        self.label_26 = QLabel(self.tab_3)
+        self.label_26.setObjectName(u"label_26")
+
+        self.horizontalLayout_21.addWidget(self.label_26)
+
+        self.spinLeftKneeWidth = QSpinBox(self.tab_3)
+        self.spinLeftKneeWidth.setObjectName(u"spinLeftKneeWidth")
+        self.spinLeftKneeWidth.setMinimum(0)
+        self.spinLeftKneeWidth.setMaximum(9999)
+        self.spinLeftKneeWidth.setValue(100)
+
+        self.horizontalLayout_21.addWidget(self.spinLeftKneeWidth)
+
+        self.label_31 = QLabel(self.tab_3)
+        self.label_31.setObjectName(u"label_31")
+
+        self.horizontalLayout_21.addWidget(self.label_31)
+
+        self.spinRightKneeWidth = QSpinBox(self.tab_3)
+        self.spinRightKneeWidth.setObjectName(u"spinRightKneeWidth")
+        self.spinRightKneeWidth.setMinimum(100)
+        self.spinRightKneeWidth.setMaximum(9999)
+        self.spinRightKneeWidth.setValue(100)
+
+        self.horizontalLayout_21.addWidget(self.spinRightKneeWidth)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_21)
+
+        self.horizontalLayout_24 = QHBoxLayout()
+        self.horizontalLayout_24.setObjectName(u"horizontalLayout_24")
+        self.label_36 = QLabel(self.tab_3)
+        self.label_36.setObjectName(u"label_36")
+
+        self.horizontalLayout_24.addWidget(self.label_36)
+
+        self.spinLeftAnkleWidth = QSpinBox(self.tab_3)
+        self.spinLeftAnkleWidth.setObjectName(u"spinLeftAnkleWidth")
+        self.spinLeftAnkleWidth.setMinimum(0)
+        self.spinLeftAnkleWidth.setMaximum(9999)
+        self.spinLeftAnkleWidth.setValue(80)
+
+        self.horizontalLayout_24.addWidget(self.spinLeftAnkleWidth)
+
+        self.label_37 = QLabel(self.tab_3)
+        self.label_37.setObjectName(u"label_37")
+
+        self.horizontalLayout_24.addWidget(self.label_37)
+
+        self.spinRightAnkleWidth = QSpinBox(self.tab_3)
+        self.spinRightAnkleWidth.setObjectName(u"spinRightAnkleWidth")
+        self.spinRightAnkleWidth.setMinimum(0)
+        self.spinRightAnkleWidth.setMaximum(9999)
+        self.spinRightAnkleWidth.setValue(80)
+
+        self.horizontalLayout_24.addWidget(self.spinRightAnkleWidth)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_24)
+
         self.line = QFrame(self.tab_3)
         self.line.setObjectName(u"line")
         self.line.setFrameShape(QFrame.Shape.HLine)
@@ -441,11 +503,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalLayout_4.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self.horizontalLayout_4.setSizeConstraint(QLayout.SetMinimumSize)
         self.label = QLabel(self.tab)
         self.label.setObjectName(u"label")
-        self.label.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label.setLayoutDirection(Qt.LeftToRight)
+        self.label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.horizontalLayout_4.addWidget(self.label)
 
@@ -476,11 +538,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
-        self.horizontalLayout_10.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self.horizontalLayout_10.setSizeConstraint(QLayout.SetMinimumSize)
         self.label_14 = QLabel(self.tab)
         self.label_14.setObjectName(u"label_14")
-        self.label_14.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.label_14.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_14.setLayoutDirection(Qt.LeftToRight)
+        self.label_14.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.horizontalLayout_10.addWidget(self.label_14)
 
@@ -515,8 +577,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.label_7 = QLabel(self.tab)
         self.label_7.setObjectName(u"label_7")
-        self.label_7.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.label_7.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_7.setLayoutDirection(Qt.LeftToRight)
+        self.label_7.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.horizontalLayout_2.addWidget(self.label_7)
 
@@ -606,7 +668,7 @@ class Ui_MainWindow(object):
 
         self.label_19 = QLabel(self.tab_4)
         self.label_19.setObjectName(u"label_19")
-        self.label_19.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_19.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_4.addWidget(self.label_19)
 
@@ -635,7 +697,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
         self.label_2 = QLabel(self.tab_4)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.horizontalLayout_14.addWidget(self.label_2)
 
@@ -731,7 +793,7 @@ class Ui_MainWindow(object):
 
         self.label_17 = QLabel(self.tab_5)
         self.label_17.setObjectName(u"label_17")
-        self.label_17.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_17.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_3.addWidget(self.label_17)
 
@@ -742,7 +804,7 @@ class Ui_MainWindow(object):
 
         self.label_18 = QLabel(self.tab_5)
         self.label_18.setObjectName(u"label_18")
-        self.label_18.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_18.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_3.addWidget(self.label_18)
 
@@ -772,8 +834,8 @@ class Ui_MainWindow(object):
         self.frame_4.setObjectName(u"frame_4")
         sizePolicy1.setHeightForWidth(self.frame_4.sizePolicy().hasHeightForWidth())
         self.frame_4.setSizePolicy(sizePolicy1)
-        self.frame_4.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_4.setFrameShadow(QFrame.Shadow.Raised)
+        self.frame_4.setFrameShape(QFrame.StyledPanel)
+        self.frame_4.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_36 = QHBoxLayout(self.frame_4)
         self.horizontalLayout_36.setObjectName(u"horizontalLayout_36")
         self.verticalLayout_22 = QVBoxLayout()
@@ -782,8 +844,8 @@ class Ui_MainWindow(object):
         self.label_61.setObjectName(u"label_61")
         sizePolicy1.setHeightForWidth(self.label_61.sizePolicy().hasHeightForWidth())
         self.label_61.setSizePolicy(sizePolicy1)
-        self.label_61.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.label_61.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_61.setLayoutDirection(Qt.LeftToRight)
+        self.label_61.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_22.addWidget(self.label_61)
 
@@ -791,7 +853,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_39.setObjectName(u"horizontalLayout_39")
         self.label_62 = QLabel(self.frame_4)
         self.label_62.setObjectName(u"label_62")
-        self.label_62.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_62.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.horizontalLayout_39.addWidget(self.label_62)
 
@@ -809,7 +871,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_40.setObjectName(u"horizontalLayout_40")
         self.label_63 = QLabel(self.frame_4)
         self.label_63.setObjectName(u"label_63")
-        self.label_63.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_63.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.horizontalLayout_40.addWidget(self.label_63)
 
@@ -832,8 +894,8 @@ class Ui_MainWindow(object):
         self.label_50.setObjectName(u"label_50")
         sizePolicy1.setHeightForWidth(self.label_50.sizePolicy().hasHeightForWidth())
         self.label_50.setSizePolicy(sizePolicy1)
-        self.label_50.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.label_50.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_50.setLayoutDirection(Qt.LeftToRight)
+        self.label_50.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_20.addWidget(self.label_50)
 
@@ -841,7 +903,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_38.setObjectName(u"horizontalLayout_38")
         self.label_60 = QLabel(self.frame_4)
         self.label_60.setObjectName(u"label_60")
-        self.label_60.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_60.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.horizontalLayout_38.addWidget(self.label_60)
 
@@ -859,7 +921,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_37.setObjectName(u"horizontalLayout_37")
         self.label_59 = QLabel(self.frame_4)
         self.label_59.setObjectName(u"label_59")
-        self.label_59.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_59.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.horizontalLayout_37.addWidget(self.label_59)
 
@@ -889,7 +951,7 @@ class Ui_MainWindow(object):
         self.label_49.setObjectName(u"label_49")
         sizePolicy1.setHeightForWidth(self.label_49.sizePolicy().hasHeightForWidth())
         self.label_49.setSizePolicy(sizePolicy1)
-        self.label_49.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_49.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_10.addWidget(self.label_49)
 
@@ -965,7 +1027,7 @@ class Ui_MainWindow(object):
         sizePolicy9.setHeightForWidth(self.sliderYrange2.sizePolicy().hasHeightForWidth())
         self.sliderYrange2.setSizePolicy(sizePolicy9)
         self.sliderYrange2.setMaximum(10000)
-        self.sliderYrange2.setOrientation(Qt.Orientation.Vertical)
+        self.sliderYrange2.setOrientation(Qt.Vertical)
 
         self.gridLayout_3.addWidget(self.sliderYrange2, 1, 1, 1, 1)
 
@@ -976,8 +1038,8 @@ class Ui_MainWindow(object):
         self.sliderYrange1.setMaximum(10000)
         self.sliderYrange1.setSingleStep(0)
         self.sliderYrange1.setValue(10000)
-        self.sliderYrange1.setOrientation(Qt.Orientation.Vertical)
-        self.sliderYrange1.setTickPosition(QSlider.TickPosition.NoTicks)
+        self.sliderYrange1.setOrientation(Qt.Vertical)
+        self.sliderYrange1.setTickPosition(QSlider.NoTicks)
 
         self.gridLayout_3.addWidget(self.sliderYrange1, 1, 0, 1, 1)
 
@@ -1004,12 +1066,12 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1173, 33))
+        self.menubar.setGeometry(QRect(0, 0, 1173, 22))
         MainWindow.setMenuBar(self.menubar)
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(5)
+        self.tabWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1036,6 +1098,10 @@ class Ui_MainWindow(object):
         self.label_24.setText(QCoreApplication.translate("MainWindow", u"Left Leg (mm):", None))
         self.label_28.setText(QCoreApplication.translate("MainWindow", u"Right Leg (mm):", None))
         self.label_27.setText(QCoreApplication.translate("MainWindow", u"Marker R (mm):", None))
+        self.label_26.setText(QCoreApplication.translate("MainWindow", u"Left Knee W (mm):", None))
+        self.label_31.setText(QCoreApplication.translate("MainWindow", u"Right Knee W (mm):", None))
+        self.label_36.setText(QCoreApplication.translate("MainWindow", u"Left Ankle W (mm):", None))
+        self.label_37.setText(QCoreApplication.translate("MainWindow", u"Right Ankle W (mm):", None))
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Angle Filter: ", None))
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"Size:", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"Sample Rate:", None))

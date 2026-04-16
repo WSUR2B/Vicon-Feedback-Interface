@@ -61,6 +61,21 @@ def compute_segment_vector(start_marker, end_marker):
     """
     return np.array(end_marker) - np.array(start_marker)
 
+def define_plane(origin, v1_end_point, v2_end_point):
+    """
+    Defines a plane based on origin and two end points.
+    origin, v1_end_point, v2_end_point are all numpy arrays with shape (3,) [x, y, z]
+    Returns:
+        tuple: A tuple containing the origin and the normal vector of the plane.
+        origin (numpy.ndarray): The origin of the plane.
+        normal (numpy.ndarray): The normal vector of the plane.
+    """
+    v1 = v1_end_point - origin
+    v2 = v2_end_point - origin
+    normal = np.cross(v1, v2)
+    normal = normal / np.linalg.norm(normal)
+    return origin, normal
+
 
 def calculate_2d_angle(vector1, vector2):
     """
