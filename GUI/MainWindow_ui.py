@@ -351,7 +351,7 @@ class Ui_MainWindow(object):
 
         self.spinRightKneeWidth = QSpinBox(self.tab_3)
         self.spinRightKneeWidth.setObjectName(u"spinRightKneeWidth")
-        self.spinRightKneeWidth.setMinimum(100)
+        self.spinRightKneeWidth.setMinimum(0)
         self.spinRightKneeWidth.setMaximum(9999)
         self.spinRightKneeWidth.setValue(100)
 
