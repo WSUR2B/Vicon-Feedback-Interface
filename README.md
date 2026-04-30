@@ -24,6 +24,7 @@ The **Vicon Data Interface** is a comprehensive software application designed to
 - **UDP Network Streaming**: Broadcast data to external applications for integration with other systems
 - **Visual Biofeedback**: Real-time feedback display for rehabilitation and training applications
 - **Flexible Data Export**: Multiple recording modes with CSV output for post-processing
+- **Sample Vicon Recording for Development**: A pre-captured Vicon trial is provided so developers can build and test against the interface without requiring live access to a Vicon system
 
 ### Intended Applications
 
@@ -32,6 +33,8 @@ The **Vicon Data Interface** is a comprehensive software application designed to
 - Motion analysis for sports performance
 - Integration with custom analysis pipelines
 - Educational demonstrations of motion capture technology
+- Development of new applications (e.g., custom games or therapy tools) that consume the interface's UDP stream
+- Testing and extension of the interface itself using the included sample Vicon recording
 
 ---
 
@@ -45,6 +48,7 @@ The **Vicon Data Interface** is a comprehensive software application designed to
 - [Features](#features)
 - [Calculated Angles](#calculated-angles)
 - [Data Export Formats](#data-export-formats)
+- [Sample Vicon Recording](#sample-vicon-recording)
 - [Troubleshooting](#troubleshooting)
 - [Authors](#authors)
 - [License](#license)
@@ -120,9 +124,14 @@ The **Vicon Data Interface** is a comprehensive software application designed to
 ViconDataInterface/
 ├── main.py                      # Main application entry point
 ├── Filters.py                   # Signal filtering implementations
-├── feedbackTest.py              # Feedback system testing utilities
 ├── requirements.txt             # Python dependencies
 ├── README.md                    # This file
+├── LICENSE                      # MIT license
+├── .gitignore                   # Git ignore rules
+├── Vicon Interface Icon.ico     # Application icon
+│
+├── assets/                      # Static assets (logos, images for the README/UI)
+│   └── LabLogo.png              # R2B Lab logo
 │
 ├── GUI/                         # Graphical user interface modules
 │   ├── MainWindow_ui.py         # Main window UI (auto-generated)
@@ -142,8 +151,10 @@ ViconDataInterface/
 │   ├── Segment.py               # Body segment representation
 │   └── Forceplate.py            # Force plate interface (experimental)
 │
-└── OtherFiles/                  # Documentation and media
-    └── Capture*.PNG             # Application screenshots
+├── SampleData/                  # Sample Vicon recording for development/testing
+│   └── (Vicon trial files — added separately, see "Sample Vicon Recording" section)
+│
+└── OtherFiles/                  # Miscellaneous supporting files and screenshots
 ```
 
 ---
@@ -329,7 +340,7 @@ Three recording modes:
 | **Knee** | Knee flexion/extension | Flexion |
 | **Ankle** | Ankle dorsi/plantarflexion | Dorsiflexion |
 
-### Frontal Plane (Abduction/Adduction) (NOT VALIDATED)
+### Frontal Plane (Abduction/Adduction) (VALIDATED)
 
 | Angle | Description | Positive Direction |
 |-------|-------------|-------------------|
@@ -382,6 +393,38 @@ Frame,X,Y,Z
 1.0,124.56,235.67,346.78
 ...
 ```
+
+---
+
+## Sample Vicon Recording
+
+To make it easier for new contributors, students, and external developers to work with this interface **without needing live access to a Vicon system**, the repository ships with a sample Vicon recording in the `SampleData/` directory.
+
+> **Note:** The Vicon recording is not yet bundled with this commit and will be added to the repository in a separate update. Once available, it will live under `SampleData/` and follow the structure described below.
+
+### What's Included
+
+The sample recording contains a Plug-in Gait labeled trial collected in the R2B Lab, including:
+
+- A labeled marker set matching the names expected by the interface (`LASI`, `RASI`, `LPSI`, `RPSI`, `LKNE`, `RKNE`, `LANK`, `RANK`, `LHEE`, `RHEE`, `LTOE`, `RTOE`)
+- A scaled and calibrated subject (VSK)
+- Auxiliary device data (where applicable, e.g., EMG / force plates)
+
+### Intended Uses
+
+- **Develop applications on top of the interface** — for example, custom games, exergames, or therapy/training tools that consume the UDP stream produced by this software
+- **Test and extend the interface itself** — debug new features, validate filter behavior, or experiment with additional joint-angle calculations against known data
+- **Reproduce results** — replay the recording to compare outputs across software versions
+
+### How to Use the Recording
+
+1. Open the trial in **Vicon Nexus** on a machine with Nexus installed
+2. Place Nexus in **live playback / replay mode** so the DataStream SDK serves the recorded frames as if they were live
+3. Enable the DataStream SDK (**Tools → Enable DataStream SDK**)
+4. Update the `host` IP in `main.py` to point at the Nexus machine (or `127.0.0.1:801` if running locally)
+5. Launch the interface: `python main.py`
+
+The application will treat the replayed trial exactly like a live capture, so all features (angle calculation, filtering, plotting, UDP streaming, recording, biofeedback) can be exercised end-to-end without a physical motion capture setup.
 
 ---
 
@@ -531,7 +574,12 @@ For questions, issues, or suggestions:
 - Visual biofeedback system
 - Configurable signal filtering
 
+### Version 1.1.0 (2026)
+- Hip adduction added to the validated joint-angle set (consistent with published validation)
+- Added `SampleData/` directory and documentation for a sample Vicon recording, enabling development and testing of the interface without live Vicon hardware
+- Project structure documentation cleaned up for consistency with the actual repository contents
+
 ---
 
-**Last Updated:** February 2026
+**Last Updated:** April 2026
 
