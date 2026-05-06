@@ -537,27 +537,41 @@ class ViconWrapper:
         It also updates the data streams if they are enabled, including device data, labeled marker data,
         unlabeled marker data, forceplate data, and subject data.
         """
-        start_time = time.time()
-
+        self.benchmarks = {}
+        self.benchmarks['1_sdk_update_loop_start'] = time.perf_counter()
         
         self.lastFrameNumber = self.frameNumber
         self.client.GetFrame()
+        self.benchmarks['2_sdk_update_loop_got_frame'] = time.perf_counter()
+
         self.viconFPS = self.client.GetFrameRate()
         self.frameNumber = self.client.GetFrameNumber()
 
         # Update data streams if they are enabled
-        if self.deviceDataOn:
+        if self.deviceDataOn: #on
+            self.benchmarks['3_sdk_update_loop_update_devices_start'] = time.perf_counter()
             self.updateDevices()
-        if self.labeledMarkerDataOn:
+            self.benchmarks['4_sdk_update_loop_update_devices_end'] = time.perf_counter()
+
+        if self.labeledMarkerDataOn: #on
+            self.benchmarks['5_sdk_update_loop_update_labeled_markers_start'] = time.perf_counter()
             self.updateLabeledMarkers()
-        if self.unlabeledMarkerDataOn:
+            self.benchmarks['6_sdk_update_loop_update_labeled_markers_end'] = time.perf_counter()
+
+        if self.unlabeledMarkerDataOn: #on
+            self.benchmarks['7_sdk_update_loop_update_unlabeled_markers_start'] = time.perf_counter()
             self.updateUnlabeledMarkers()
+            self.benchmarks['8_sdk_update_loop_update_unlabeled_markers_end'] = time.perf_counter()
+
         if self.forceplateDataOn:
             self.updateForeceplates()
-        if self.subjectDataOn:
-            self.updateSubjects()
 
-        dt = (time.time() - start_time)
+        if self.subjectDataOn: #on
+            self.benchmarks['9_sdk_update_loop_update_subjects_start'] = time.perf_counter()
+            self.updateSubjects()
+            self.benchmarks['10_sdk_update_loop_update_subjects_end'] = time.perf_counter()
+
+        dt = (time.perf_counter() - self.benchmarks['1_sdk_update_loop_start'])
         if dt == 0:
             dt =.01
         self.localFPS =  1.0/dt

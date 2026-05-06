@@ -66,6 +66,8 @@ from ViconWrapper.ViconWrapper import ViconWrapper
 import Kinematics.Calculation as calc
 import Filters as filters
 
+frame_timing_vector = []
+frame_timing_vector_max = 1000 #100 per second -> 3000 is 30s
 
 # ============================================================================
 # DATA VISUALIZATION CLASSES
@@ -885,15 +887,19 @@ class MainTask:
         the window recording start/stop logic.
         """
         global vicon
+        global frame_timing_vector, frame_timing_vector_max
+        frame_metrics = {}
 
         # Get latest frame from Vicon
         vicon.updateFrame()
-        start_time = time.time()
+        frame_metrics.update(vicon.benchmarks)
+        frame_metrics['frame number'] = vicon.frameNumber
 
         # Track frame numbers for plot clearing
         self.lastViconFrame = self.currentViconFrame
         self.currentViconFrame = vicon.frameNumber
 
+        frame_metrics['11_plot_clean_saving_to_csv_get_active_subject_start'] = time.perf_counter()
         # Clear plot when frame counter rolls over
         if self.lastViconFrame%self.maxFrames > self.currentViconFrame%self.maxFrames:
             print("Clearing Plot")
@@ -926,27 +932,43 @@ class MainTask:
                                                        self.filterType, self.filterLowCut, self.filterHighCut)
         else:
             self.activeSubject = None
+        frame_metrics['12_plot_clean_saving_to_csv_get_active_subject_end'] = time.perf_counter()
 
         # Update all subsystems with current frame data
+        frame_metrics['13_update_plotting_start'] = time.perf_counter()
         self.plotting.updatePlotting(vicon.frameNumber % self.maxFrames, vicon)
-        
+        frame_metrics['14_update_plotting_end'] = time.perf_counter()
+
+        frame_metrics['15_update_exporting_start'] = time.perf_counter()
         if self.exporting.isRecording:
             self.exporting.updateExporting(vicon.frameNumber, vicon)
-        
+        frame_metrics['16_update_exporting_end'] = time.perf_counter()
+
+        frame_metrics['17_update_streaming_start'] = time.perf_counter()
         if self.streaming.IsStreamingUDP:
             self.streaming.updateStream(vicon)
+        frame_metrics['18_update_streaming_end'] = time.perf_counter()
 
+        frame_metrics['19_update_feedback_start'] = time.perf_counter()
         if self.feedback.deviceFeedbackList != [] or self.feedback.angleFeedbackList != []:
             self.feedback.updateFeedback(vicon)
+        frame_metrics['19_update_feedback_end'] = time.perf_counter()
+
+        # Store in your global vector for analysis
+        frame_timing_vector.append(frame_metrics)
+        if len(frame_timing_vector) > frame_timing_vector_max:
+            frame_timing_vector.pop(0)
 
         # Calculate and update FPS
-        dt = time.time() - start_time
-        if dt == 0:
-            dt = .001
-        self.frame_count += 1
-        if(self.frame_count >= 100):
-            self.frame_count = 0
-            self.tickFPS(dt)
+        dt = time.perf_counter() - frame_metrics['1_sdk_update_loop_start']
+        frame_metrics['total_time'] = dt
+
+        # if dt == 0:
+        #     dt = .001
+        # self.frame_count += 1
+        # if(self.frame_count >= 100):
+        #     self.frame_count = 0
+        #     self.tickFPS(dt)
 
 
         # Schedule next frame AFTER Qt processes all pending events (QTimer internally calls app.processEvents())
@@ -1618,6 +1640,31 @@ def feedbackNegateChanged():
 # APPLICATION LIFECYCLE FUNCTIONS
 # ============================================================================
 
+def save_timing_data():
+    """
+    Converts the timing list to a CSV. 
+    Using Pandas is fastest for list-of-dicts to CSV conversion.
+    """
+    global frame_timing_vector
+    if not frame_timing_vector:
+        print("No timing data to save.")
+        return
+
+    import pandas as pd
+    import os
+
+    # Create a DataFrame from the list of dictionaries
+    df = pd.DataFrame(frame_timing_vector)
+    
+    # Save with a timestamp to avoid overwriting
+    save_name = f"timing_log_{int(time.time())}.csv"
+    save_name = f"timing_log.csv"
+    save_path = save_name #os.path.join(self.exporting.savePath, save_name)
+    
+    # Use index=False so MATLAB doesn't get confused by the row numbers
+    df.to_csv(save_path, index=False)
+    print(f"Timing data saved to: {save_path}")
+
 def closingEvent():
     """
     Handle application shutdown.
@@ -1627,6 +1674,7 @@ def closingEvent():
     global vicon, Main
     print("Closing Event")
     vicon.stopStream()
+    save_timing_data()
     Main.streaming.stopUDPStream()
     
 
@@ -1653,7 +1701,7 @@ def setupGUI():
     app.setApplicationDisplayName("Vicon Data Viewer")
     app.setApplicationVersion("1.0")
 
-    
+
 
 
     MainWindow = QMainWindow()
@@ -1674,6 +1722,12 @@ def setupGUI():
     SideWindow.show()
 
     
+    def on_main_window_close(event):
+        # This forces the entire application to shut down when the main UI is closed
+        QApplication.quit()
+        event.accept()
+
+    MainWindow.closeEvent = on_main_window_close
 
 
     feedbackMax = 100
@@ -1813,7 +1867,7 @@ if __name__ == "__main__":
     """
     # Vicon system configuration
     # Update this IP:port to match your Vicon system
-    host = "141.217.166.239:801"
+    host = "localhost:801"
     
     # Initialize Vicon connection
     vicon = ViconWrapper(host)
