@@ -1,0 +1,89 @@
+timing_log_streaming (30 seconds trimmed)
+Selected Devices: Right/Force only
+Selected Angles: LHip, RHip, LKnee, RKnee, LAnkle, RAnkle, LHipAdd, RHipAdd 
+Angles with Moving Mean Filter, width = 5
+with active Streaming (RHip)
+
+S1: dt_sdk_frame_waiting_ms                         | min:    6.5175 | med:    7.9066 | max:    8.6924 | mean:    7.9028 | std:    0.2105 | p99:    8.3977
+S2: dt_sdk_device_data_fetch_ms                     | min:    0.1463 | med:    0.1742 | max:    0.3822 | mean:    0.1774 | std:    0.0234 | p99:    0.2702
+S3: dt_sdk_labeled_markers_fetch_ms                 | min:    0.0388 | med:    0.0459 | max:    0.1636 | mean:    0.0481 | std:    0.0086 | p99:    0.0764
+S4: dt_sdk_unlabeled_markers_fetch_ms               | min:    0.0015 | med:    0.0020 | max:    0.0116 | mean:    0.0021 | std:    0.0005 | p99:    0.0033
+S5: dt_sdk_update_subject_fetchNcompute_ms          | min:    1.4918 | med:    1.8244 | max:    2.5836 | mean:    1.8390 | std:    0.1291 | p99:    2.2000
+S:                                                  | min:    8.7507 | med:    9.9702 | max:   11.2181 | mean:    9.9694 | std:    0.2496 | p99:   10.5859
+S-S1:                                               | min:    1.6951 | med:    2.0521 | max:    3.0498 | mean:    2.0666 | std:    0.1409 | p99:    2.4563
+S1 to S1:                                           | min:    8.7861 | med:    9.9994 | max:   11.2715 | mean:    9.9998 | std:    0.2511 | p99:   10.6240
+S1 to S1 FPS:                                       | min:   88.7193 | med:  100.0060 | max:  113.8161 | mean:  100.0655 | std:    2.5169 | p99:  106.2513
+ 
+P1: dt_clean_plot_save_to_csv_get_active_subject_ms | min:    0.0028 | med:    0.0054 | max:   10.2429 | mean:    0.0109 | std:    0.1899 | p99:    0.0163
+P2: dt_update_plotting_ms                           | min:    0.0117 | med:    0.0272 | max:    0.1252 | mean:    0.0317 | std:    0.0134 | p99:    0.0678
+P3: dt_update_exporting_ms                          | min:    0.0001 | med:    0.0003 | max:    0.0070 | mean:    0.0004 | std:    0.0002 | p99:    0.0008
+P4: dt_update_streaming_ms                          | min:    0.0300 | med:    1.5788 | max:   10.5714 | mean:    4.0867 | std:    4.0535 | p99:   10.1774
+P5: dt_update_feedback_ms                           | min:    0.0006 | med:    0.0014 | max:    0.0301 | mean:    0.0020 | std:    0.0015 | p99:    0.0053
+P:                                                  | min:    0.0645 | med:    1.6171 | max:   10.9145 | mean:    4.1316 | std:    4.0545 | p99:   10.2206
+P-P1:                                               | min:    0.0595 | med:    1.6090 | max:   10.5985 | mean:    4.1207 | std:    4.0537 | p99:   10.2109
+ 
+from_sdk_frame_got_to_feedback_end_ms               | min:   10.0366 | med:   11.7288 | max:   40.0059 | mean:   14.7781 | std:    4.7887 | p99:   29.9446
+marker_move_to_frame_got_ms (GetLatencyTotal)       | min:   13.8304 | med:   14.0357 | max:   14.7337 | mean:   14.0580 | std:    0.1147 | p99:   14.4245
+marker_move_to_feedback_end_ms                      | min:   24.2448 | med:   25.7753 | max:   54.2379 | mean:   28.8361 | std:    4.7886 | p99:   44.0002
+++++++++++++++++++++++++++++++++++++++++++
+
+timing_log_recording_streaming (30 seconds trimmed)
+Selected Devices: Right/Force only
+Selected Angles: LHip, RHip, LKnee, RKnee, LAnkle, RAnkle, LHipAdd, RHipAdd 
+Angles with Moving Mean Filter, width = 5
+with active Exporting 
+with active Streaming (RHip)
+
+S1: dt_sdk_frame_waiting_ms                         | min:    6.0384 | med:    7.8282 | max:    8.6672 | mean:    7.7992 | std:    0.2494 | p99:    8.3034
+S2: dt_sdk_device_data_fetch_ms                     | min:    0.1504 | med:    0.1907 | max:    0.4075 | mean:    0.1899 | std:    0.0273 | p99:    0.2952
+S3: dt_sdk_labeled_markers_fetch_ms                 | min:    0.0385 | med:    0.0511 | max:    0.2159 | mean:    0.0521 | std:    0.0105 | p99:    0.0887
+S4: dt_sdk_unlabeled_markers_fetch_ms               | min:    0.0015 | med:    0.0023 | max:    0.0230 | mean:    0.0025 | std:    0.0010 | p99:    0.0041
+S5: dt_sdk_update_subject_fetchNcompute_ms          | min:    1.4853 | med:    1.8807 | max:    3.7547 | mean:    1.9198 | std:    0.1790 | p99:    2.5429
+S:                                                  | min:    8.3042 | med:    9.9668 | max:   11.7356 | mean:    9.9635 | std:    0.3052 | p99:   10.7443
+S-S1:                                               | min:    1.6976 | med:    2.1254 | max:    4.0219 | mean:    2.1643 | std:    0.1869 | p99:    2.8007
+S1 to S1:                                           | min:    8.3390 | med:   10.0007 | max:   59.6205 | mean:   10.0162 | std:    0.9573 | p99:   10.7998
+S1 to S1 FPS:                                       | min:   16.7728 | med:   99.9930 | max:  119.9185 | mean:  100.0700 | std:    3.4388 | p99:  107.9545
+ 
+P1: dt_clean_plot_save_to_csv_get_active_subject_ms | min:    0.0040 | med:    0.0060 | max:    9.9695 | mean:    0.0111 | std:    0.1846 | p99:    0.0144
+P2: dt_update_plotting_ms                           | min:    0.0131 | med:    0.0273 | max:    0.0957 | mean:    0.0311 | std:    0.0110 | p99:    0.0612
+P3: dt_update_exporting_ms                          | min:    0.0064 | med:    0.0098 | max:    0.0425 | mean:    0.0105 | std:    0.0028 | p99:    0.0185
+P4: dt_update_streaming_ms                          | min:    0.0260 | med:    1.6605 | max:   10.6819 | mean:    4.4776 | std:    4.2326 | p99:   10.1849
+P5: dt_update_feedback_ms                           | min:    0.0006 | med:    0.0016 | max:    0.0100 | mean:    0.0019 | std:    0.0010 | p99:    0.0049
+P:                                                  | min:    0.0598 | med:    1.7092 | max:   10.7247 | mean:    4.5322 | std:    4.2339 | p99:   10.2396
+P-P1:                                               | min:    0.0530 | med:    1.7018 | max:   10.7193 | mean:    4.5212 | std:    4.2329 | p99:   10.2314
+ 
+from_sdk_frame_got_to_feedback_end_ms               | min:    9.8445 | med:   11.6682 | max:   52.4069 | mean:   14.6512 | std:    4.5478 | p99:   20.9905
+marker_move_to_frame_got_ms (GetLatencyTotal)       | min:   13.8448 | med:   14.0858 | max:   15.0242 | mean:   14.1032 | std:    0.1158 | p99:   14.4323
+marker_move_to_feedback_end_ms                      | min:   23.9735 | med:   25.7687 | max:   66.3944 | mean:   28.7544 | std:    4.5482 | p99:   35.2744
+
+++++++++++++++++++++++++++++++++++++++++++
+
+timing_log_recording_feedback (30 seconds trimmed)
+Selected Devices: Right/Force only
+Selected Angles: LHip, RHip, LKnee, RKnee, LAnkle, RAnkle, LHipAdd, RHipAdd 
+Angles with Moving Mean Filter, width = 5
+with active Exporting 
+with active Feedback  (RHip)
+
+S1: dt_sdk_frame_waiting_ms                         | min:    4.6544 | med:    7.7276 | max:   10.3700 | mean:    7.7489 | std:    0.4157 | p99:    8.7121
+S2: dt_sdk_device_data_fetch_ms                     | min:    0.1488 | med:    0.1871 | max:    0.6675 | mean:    0.1872 | std:    0.0322 | p99:    0.2877
+S3: dt_sdk_labeled_markers_fetch_ms                 | min:    0.0385 | med:    0.0521 | max:    0.2230 | mean:    0.0533 | std:    0.0102 | p99:    0.0899
+S4: dt_sdk_unlabeled_markers_fetch_ms               | min:    0.0016 | med:    0.0026 | max:    0.0256 | mean:    0.0027 | std:    0.0009 | p99:    0.0044
+S5: dt_sdk_update_subject_fetchNcompute_ms          | min:    1.4580 | med:    1.8727 | max:    3.4931 | mean:    1.9713 | std:    0.3515 | p99:    2.9919
+S:                                                  | min:    7.3746 | med:    9.9501 | max:   12.6922 | mean:    9.9634 | std:    0.5259 | p99:   11.2708
+S-S1:                                               | min:    1.6523 | med:    2.1211 | max:    3.7738 | mean:    2.2145 | std:    0.3586 | p99:    3.2567
+S1 to S1:                                           | min:    7.4095 | med:    9.9880 | max:   20.7679 | mean:   10.0499 | std:    0.8717 | p99:   11.4981
+S1 to S1 FPS:                                       | min:   48.1512 | med:  100.1201 | max:  134.9619 | mean:  100.0217 | std:    6.3441 | p99:  112.8460
+ 
+P1: dt_clean_plot_save_to_csv_get_active_subject_ms | min:    0.0023 | med:    0.0037 | max:    1.7841 | mean:    0.0061 | std:    0.0497 | p99:    0.0135
+P2: dt_update_plotting_ms                           | min:    0.0079 | med:    0.0171 | max:    0.0775 | mean:    0.0229 | std:    0.0130 | p99:    0.0621
+P3: dt_update_exporting_ms                          | min:    0.0046 | med:    0.0075 | max:    0.0749 | mean:    0.0085 | std:    0.0035 | p99:    0.0184
+P4: dt_update_streaming_ms                          | min:    0.0001 | med:    0.0003 | max:    0.0017 | mean:    0.0003 | std:    0.0002 | p99:    0.0008
+P5: dt_update_feedback_ms                           | min:    0.0347 | med:    0.0512 | max:   29.8450 | mean:    0.2143 | std:    1.2926 | p99:    9.7558
+P:                                                  | min:    0.0519 | med:    0.0790 | max:   29.9495 | mean:    0.2521 | std:    1.2970 | p99:    9.8044
+P-P1:                                               | min:    0.0495 | med:    0.0754 | max:   29.9359 | mean:    0.2461 | std:    1.2958 | p99:    9.7993
+ 
+from_sdk_frame_got_to_feedback_end_ms               | min:    8.6534 | med:   20.2988 | max:   69.9028 | mean:   22.6478 | std:   11.6133 | p99:   50.1111
+marker_move_to_frame_got_ms (GetLatencyTotal)       | min:   13.8146 | med:   14.0432 | max:   14.8548 | mean:   14.0596 | std:    0.1027 | p99:   14.3649
+marker_move_to_feedback_end_ms                      | min:   22.7653 | med:   34.3480 | max:   83.9070 | mean:   36.7073 | std:   11.6203 | p99:   64.1858
+

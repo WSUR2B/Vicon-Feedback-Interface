@@ -290,7 +290,9 @@ Example: "LHip          45.67     $"
 
 ### Joint Angle Calculation
 
-- **Real-Time Computation**: Joint angles calculated each frame (~100 Hz)
+- **Real-Time Computation**: Joint angles calculated each frame (~100 Hz in
+  live mode; lower when Nexus is in recording-playback mode, since the SDK
+  is throttled by the playback engine)
 - **Plug-in Gait Model**: Industry-standard biomechanical model
 - **Bilateral Analysis**: Simultaneous left and right side calculations
 - **Zero Calibration**: Set reference position for relative measurements
@@ -426,6 +428,18 @@ The sample recording contains a Plug-in Gait labeled trial collected in the R2B 
 
 The application will treat the replayed trial exactly like a live capture, so all features (angle calculation, filtering, plotting, UDP streaming, recording, biofeedback) can be exercised end-to-end without a physical motion capture setup.
 
+> **Important — playback throttles the frame rate.** When Nexus is in
+> recording-playback / replay mode, the DataStream SDK is rate-limited by
+> the Nexus playback engine, so the interface (and any UDP-streamed data)
+> will run noticeably slower than the native 100 Hz capture rate. This is
+> a Nexus-side limitation, not an issue with the interface itself.
+>
+> To obtain the full 100 frames-per-second pipeline (matching the rate at
+> which the trial was originally recorded), Nexus must be in **live mode**
+> with the cameras streaming. Use playback for development, debugging, and
+> end-to-end testing; switch to live mode whenever throughput, latency, or
+> real-time behavior is being measured or demonstrated.
+
 ---
 
 ## Troubleshooting
@@ -446,6 +460,10 @@ The application will treat the replayed trial exactly like a live capture, so al
 **Problem:** Low FPS or lag in visualization
 
 **Solutions:**
+- **Check that Nexus is in live mode, not playback / replay.** The DataStream
+  SDK throttles output during recording playback, so the interface and any
+  UDP-streamed data will run below the native 100 Hz rate. Live capture is
+  required to hit the full 100 frames per second.
 - Disable unused devices and angles
 - Reduce plot window size (frames displayed)
 - Close other applications
