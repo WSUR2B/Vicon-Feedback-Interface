@@ -12,6 +12,10 @@
 
 ---
 
+## Citation:
+Ackun, P. E., Grubich, D. P., Foley, S. A., & Washabaugh, E. P. (2026). An open-source system for real-time visual feedback of kinematic data during rehabilitation. Journal of Biomechanics Open, 100011.
+
+
 ## Overview
 
 The **Vicon Data Interface** is a comprehensive software application designed to extend the capabilities of Vicon motion capture systems for biomechanics research and clinical applications. Built on top of Vicon's DataStream SDK, this interface provides real-time data acquisition, processing, visualization, and export capabilities for marker-based motion capture data and auxiliary devices (EMG, force plates, etc.).
